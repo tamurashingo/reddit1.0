@@ -8,7 +8,7 @@
 (in-package #:reddit-system)
 
 (defsystem reddit
-    :depends-on (:tbnl
+    :depends-on (:hunchentoot
                  :cl-ppcre
                  :trivial-http
                  :cl-who
