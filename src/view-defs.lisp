@@ -18,7 +18,73 @@
 ;;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;;;; SOFTWARE.
 
-(in-package :reddit)
+(in-package :cl-user)
+(defpackage :reddit.view-defs
+  (:use :cl)
+  (:import-from :clsql
+                :def-view-class
+                :get-time)
+  (:export :user
+           :user-id
+           :user-name
+           :user-email
+           :user-karma
+           :user-date
+           :user-ip
+           :article
+           :article-id
+           :article-url
+           :article-title
+           :article-date
+           :article-submitterid
+           :article-submitter
+           :article-pop
+           :article-with-sn
+           :article-sn
+           :wtf
+           :wtf-userid
+           :wtf-user
+           :wtf-articleid
+           :wtf-reason
+           :wtf-date
+           :click
+           :click-userid
+           :click-articleid
+           :click-date
+           :click-ip
+           :like
+           :like-userid
+           :like-articleid
+           :like-date
+           :like-like
+           :moduser
+           :moduser-userid
+           :moduser-articleid
+           :moduser-targetid
+           :moduser-date
+           :moduser-ip
+           :moduser-amount
+           :modarticle
+           :modarticle-userid
+           :modarticle-articleid
+           :modarticle-date
+           :modarticle-ip
+           :modarticle-amount
+           :neuter
+           :neuter-userid
+           :neuter-ip
+           :options
+           :options-userid
+           :options-nnumsittes
+           :options-promoted
+           :options-demoted
+           :options-visible
+           :options-frame
+           :alias
+           :alias-userid
+           :alias-name
+           :alias-val))
+(in-package :reddit.view-defs)
 
 ;;user
 (def-view-class user ()
