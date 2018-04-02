@@ -8,15 +8,17 @@
 (in-package #:reddit-system)
 
 (defsystem reddit
-    :depends-on (:hunchentoot
-                 :cl-ppcre
-                 :trivial-http
-                 :cl-who
-                 :clsql
-                 :clsql-postgresql
-                 :cl-smtp
-                 :ironclad)
-    :components ((:file "packages")
+  :depends-on (:hunchentoot
+               :cl-ppcre
+               :trivial-http
+               :cl-who
+               :clsql
+               :clsql-postgresql
+               :cl-smtp
+               :ironclad)
+  :components ((:module "src"
+                :components
+                ((:file "packages")
                  (:file "cookiehash" :depends-on ("packages" "data"))
                  (:file "recommend" :depends-on ("packages" "user-info"))
                  (:file "frame" :depends-on ("packages" "web"))
@@ -33,5 +35,4 @@
                  (:file "rss" :depends-on ("memcached" "packages" "sites"))
                  (:file "sites" :depends-on ("packages" "data" "util" "search" "autocompute" "user-info"))
                  (:file "mail" :depends-on ("packages" "data"))
-                 (:file "user-panel" :depends-on ("data" "packages" "web" "sites"))))
-                 
+                 (:file "user-panel" :depends-on ("data" "packages" "web" "sites"))))))
