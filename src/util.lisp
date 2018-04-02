@@ -18,7 +18,53 @@
 ;;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;;;; SOFTWARE.
 
-(in-package #:reddit)
+(in-package :cl-user)
+(defpackage :reddit.util
+  (:use :cl)
+  (:import-from :cl-ppcre
+                :create-scanner
+                :register-groups-bind
+                :scan
+                :split)
+  (:import-from :cl-who
+                :conc
+                :escape-string)
+  (:import-from :clsql
+                :decode-time)
+  (:import-from :hunchentoot
+                :cookie-in
+                :log-message*
+                :set-cookie)
+  (:import-from :trivial-http
+                :http-get)
+  (:export :website-stream
+           :website-string
+           :website-title
+           :tl-domain
+           :replace-alist
+           :create-url
+           :days
+           :age-str
+           :sanitize
+           :add-rlist
+           :decode-user-url
+           :2weeks
+           :-2weeks
+           :good-nytimes-p
+           :nytimes-link-p
+           :nytimes-genlink-website
+           :good-nytimes
+           :nytimes-safe-url
+           :base-url
+           :add-http
+           :makestr
+           :key-str
+           :esc-quote
+           :shorten-str
+           :when-bind
+           :when-bind*))
+(in-package :reddit.util)
+
 
 (defparameter *title* (create-scanner "(?s)(?i)<title>(.+?)</title>"))
 (defparameter *toplevel* (create-scanner "https?://(?:www.)?([^/]*)"))
