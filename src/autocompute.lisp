@@ -18,15 +18,18 @@
 ;;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;;;; SOFTWARE.
 
-(in-package :reddit)
+(in-package :cl-user)
+(defpackage reddit.autocompute
+  (:use :cl))
+(in-package :reddit.autocompute)
 
 (defun get-processes (name)
-  (remove-if-not #'(lambda (x) (string= name (mp:process-name x)))
-                 (mp:all-processes)))
+  (remove-if-not #'(lambda (x) (string= name (bt:thread-name x)))
+                 (bt:all-threads)))
 
 (defun destroy-processes (name)
   (dolist (p (get-processes name))
-    (mp:destroy-process p)))
+    (bt:destroy-thread p)))
 
 (defclass ac ()
   ((name
@@ -47,23 +50,23 @@
     :initform (error "must specify a function")
     :accessor ac-fn)
    (lock
-    :initform (mp:make-lock)
+    :initform (bt:make-lock)
     :accessor ac-lock)))
 
 (defmethod initialize-instance :after ((auto ac)  &key)
   (destroy-processes (ac-name auto))
-   (setf (slot-value auto 'process)
-         (mp:make-process
-          #'(lambda ()
-              (loop
-                 (mp:with-lock-held ((ac-lock auto))
-                   (setf (slot-value auto 'val)
-                         (funcall (ac-fn auto))))
-                 (sleep (ac-period auto))))
-  :name (ac-name auto))))
+  (setf (slot-value auto 'process)
+        (bt:make-thread
+         #'(lambda ()
+             (loop
+                (bt:with-lock-held ((ac-lock auto))
+                  (setf (slot-value auto 'val)
+                        (funcall (ac-fn auto))))
+                (sleep (ac-period auto))))
+         :name (ac-name auto))))
 
 (defmethod ac-update ((auto ac))
-  (mp:with-lock-held ((ac-lock auto))
+  (bt:with-lock-held ((ac-lock auto))
     (setf (slot-value auto 'val)
           (funcall (ac-fn auto)))))
              

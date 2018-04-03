@@ -9,6 +9,7 @@
 
 (defsystem reddit
   :depends-on (:hunchentoot
+               :bordeaux-threads
                :cl-ppcre
                :trivial-http
                :cl-who
