@@ -16,7 +16,8 @@
                :clsql
                :clsql-postgresql
                :cl-smtp
-               :ironclad)
+               :ironclad
+               :cl-memcached)
   :components ((:module "src"
                 :components
                 ((:file "packages")
