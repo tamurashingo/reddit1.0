@@ -18,7 +18,25 @@
 ;;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;;;; SOFTWARE.
 
-(in-package :reddit)
+(in-package :cl-user)
+(defpackage :reddit.cookiehash
+  (:use :cl)
+  (:import-from :clsql
+                :format-time
+                :get-time)
+  (:import-from :ironclad
+                :ascii-string-to-byte-array
+                :byte-array-to-hex-string
+                :digest-sequence)
+  (:import-from :reddit.data
+                :get-user
+                :user-pass)
+  (:import-from :reddit.view-defs
+                :user-id)
+  (:import-from :reddit.util
+                :makestr
+                :when-bind*))
+(in-package :reddit.cookiehash)
 
 (defparameter *secret* "blargo")
 
