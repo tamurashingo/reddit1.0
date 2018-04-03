@@ -18,7 +18,49 @@
 ;;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;;;; SOFTWARE.
 
-(in-package #:reddit)
+(in-package :cl-user)
+(defpackage :reddit.data
+  (:use :cl)
+  (:import-from :clsql
+                :*default-caching*
+                :connect
+                :delete-records
+                :delete-instance-records
+                :get-time
+                :insert-records
+                :locally-enable-sql-reader-syntax
+                :make-duration
+                :select
+                :sequence-next
+                :sql-expression
+                :time-
+                :time<
+                :update-records
+                :update-records-from-instance)
+  (:import-from :hunchentoot
+                :log-message*)
+  (:import-from :reddit.view-defs
+                :alias-name
+                :alias-val
+                :article-id
+                :article-date
+                :article-submitterid
+                :like-date
+                :like-like
+                :modarticle-amount
+                :modarticle-date
+                :modarticle-ip
+                :moduser-amount
+                :moduser-date
+                :moduser-ip
+                :options-visible
+                :user-karma)
+  (:import-from :reddit.util
+                :add-http
+                :base-url
+                :when-bind))
+(in-package :reddit.data)
+
 
 (defparameter *max-emails* 100)
 (defparameter *mod-window* (make-duration :day 2))
@@ -128,6 +170,18 @@
     (typecase id-or-url
       (integer (car (select 'article :where [= id-or-url [id]] :flatp t)))
       (string (car (select 'article :where [= id-or-url [url]] :flatp t))))))
+
+;;similar urls
+(defun similar-urls (url)
+  (select [id] [url] :from [articles] :where [like [url] (format nil "%~a%" url)] ))
+
+(defun article-id-from-url (url)
+  (when (> (length url) 0)
+    (let ((url (base-url url)))
+      (some #'(lambda (site)
+                (when (string= (base-url (second site)) url)
+                  (first site)))
+            (similar-urls url)))))
 
 (defun insert-article (title url submitter ip &optional fuser)
   "Insert an article into the datebase and give user credit for

@@ -122,17 +122,6 @@
       (when newurl
         (update-site-url articleid newurl)))))
 
-;;similar urls
-(defun similar-urls (url)
-  (select [id] [url] :from [articles] :where [like [url] (format nil "%~a%" url)] ))
-
-(defun article-id-from-url (url)
-  (when (> (length url) 0)
-    (let ((url (base-url url)))
-      (some #'(lambda (site)
-                (when (string= (base-url (second site)) url)
-                  (first site)))
-            (similar-urls url)))))
 
 ;;saved sites
 (defun save-site (userid articleid)
