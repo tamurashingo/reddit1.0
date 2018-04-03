@@ -18,7 +18,19 @@
 ;;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;;;; SOFTWARE.
 
-(in-package :reddit)
+(in-package :cl-user)
+(defpackage reddit.user-info
+  (:use :cl)
+  (:import-from :clsql
+                :select)
+  (:import-from :hunchentoot
+                :log-message*)
+  (:import-from :reddit.data
+                :get-user
+                :get-user-options)
+  (:import-from :reddit.util
+                :when-bind))
+(in-package :reddit.user-info)
  
 (defmacro userinfo (info sym &optional article)
   (case sym
