@@ -18,7 +18,17 @@
 ;;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;;;; SOFTWARE.
 
-(in-package :reddit)
+(in-package :cl-user)
+(defpackage reddit.recommend
+  (:use :cl)
+  (:import-from :cl-ppcre
+                :create-scanner
+                :scan-to-strings
+                :split)
+  (:import-from :reddit.user-info
+                :user-alias))
+(in-package :reddit.recommend)
+
 
 (defparameter *email-scanner* (create-scanner "^\\w*[+-._\\w]*\\w@\\w[-._\\w]*\\w\\.\\w{2,3}$"))
 (defparameter *token-scanner* (create-scanner "[,;\\s]+"))
