@@ -18,7 +18,16 @@
 ;;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;;;; SOFTWARE.
 
-(in-package :reddit)
+(in-package :cl-user)
+(defpackage reddit.search
+  (:use :cl)
+  (:import-from :cl-ppcre
+                :regex-replace-all)
+  (:import-from :clsql
+                :select
+                :sql
+                :sql-expression))
+(in-package :reddit.search)
 
 (defun search-char (c)
   "T if c is an a letter, number, or '"
