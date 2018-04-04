@@ -18,7 +18,17 @@
 ;;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;;;; SOFTWARE.
 
-(in-package :reddit)
+(in-package :cl-user)
+(defpackage reddit.mail
+  (:use :cl)
+  (:import-from :cl-smtp
+                :send-email)
+  (:import-from :clsql
+                :select)
+  (:import-from :reddit.data
+                :email-sent
+                :valid-email))
+(in-package :reddit.mail)
 
 (defparameter *mail-prog* "/usr/bin/mail")
 
@@ -27,10 +37,10 @@
 (defparameter *mail-server* "216.55.162.13")
 
 (defun send-reddit-email (to from subject message)
-  (mp:make-process
+  (bt:make-thread
    #'(lambda ()
-         (ignore-errors
-             (send-email *mail-server* from to subject message :username *user* :password *pass*)))))
+       (ignore-errors
+         (send-email *mail-server* from to subject message :authentication '(*user* *pass*))))))
 
 (defun info-email-body (user password)
   (with-output-to-string (s)
@@ -53,6 +63,13 @@
     (format s "~a~%~%" link)
     (format s "Check out http://reddit.com to see what's new online today!~%~%")
     (format s "If you have any questions regarding this email direct them to feedback@reddit.com")))
+
+(defun site-tl (articleid)
+  "Returns the title and link for a particlular site."
+   (car (select [title] [url] :from [articles]
+          :where [= [id] articleid]
+          :flatp t
+          )))
 
 (defun send-recommendation (userid articleid ip addresses from personal)
   (let* ((tl (site-tl articleid))

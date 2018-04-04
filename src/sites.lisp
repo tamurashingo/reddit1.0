@@ -83,12 +83,6 @@
           :limit limit
           :flatp t))
 
-(defun site-tl (articleid)
-  "Returns the title and link for a particlular site."
-   (car (select [title] [url] :from [articles]
-          :where [= [id] articleid]
-          :flatp t
-          )))
                
 ;;close sites
 (defun unclose-site-sql (userid articleid)
