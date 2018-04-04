@@ -76,7 +76,7 @@
 (defparameter *conn-spec* `(,*database-server* ,*database-name* ,*database-user* ,*database-password*))
 
 (defmacro with-web-db (&body body)
-  `(with-database (*default-database* *conn-spec* :pool t :database-type *database-type*)
+  `(clsql:with-database (clsql:*default-database* *conn-spec* :pool t :database-type *database-type*)
      ,@body))
 
 (connect *conn-spec* :database-type *database-type* :if-exists :old)

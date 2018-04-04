@@ -18,7 +18,41 @@
 ;;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;;;; SOFTWARE.
 
-(in-package #:reddit)
+(in-package :cl-user)
+(defpackage reddit.sites
+  (:use :cl)
+  (:import-from :clsql
+                :delete-records
+                :insert-records
+                :select
+                :sql-operation
+                :update-records)
+  (:import-from :reddit.autocompute
+                :ac
+                :ac-val
+                :destroy-processes)
+  (:import-from :reddit.data
+                :article-id-from-url
+                :get-article-sn
+                :with-web-db)
+  (:import-from :reddit.search
+                :search-sites)
+  (:import-from :reddit.user-info
+                :get-info
+                :user-closed
+                :user-liked
+                :user-options)
+  (:import-from :reddit.util
+                :add-http
+                :good-nytimes
+                :good-nytimes-p
+                :nytimes-link-p
+                :website-title)
+  (:import-from :reddit.view-defs
+                :article-id
+                :article-title
+                :article-with-sn))
+(in-package :reddit.sites)
 
 (defparameter *min-front-page-pop* 2)
 (defparameter *prob-threshold* .7)
