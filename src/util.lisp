@@ -62,7 +62,8 @@
            :esc-quote
            :shorten-str
            :when-bind
-           :when-bind*))
+           :when-bind*
+           :with-parameters)
 (in-package :reddit.util)
 
 
@@ -247,3 +248,10 @@
       `(let (,(car binds))
          (if ,(caar binds)
              (when-bind* ,(cdr binds) ,@body)))))
+
+;;TODO fix multiple eval of params
+(defmacro with-parameters (params &body body)
+  `(let (,@(mapcar  (lambda (x) `(,(first x) (or (hunchentoot:post-parameter ,(second x))
+                                                 (hunchentoot:get-parameter ,(second x))))) params))
+     ,@body))
+

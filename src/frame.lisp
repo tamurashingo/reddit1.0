@@ -18,9 +18,39 @@
 ;;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;;;; SOFTWARE.
 
-(in-package :reddit)
+(in-package :cl-user)
+(defpackage reddit.frame
+  (:use :cl)
+  (:import-from :cl-who
+                :conc
+                :esc
+                :htm
+                :str
+                :with-html-output-to-string)
+  (:import-from :reddit.data
+                :get-article)
+  (:import-from :reddit.user-info
+                :get-info
+                :user-liked
+                :userobj)
+  (:import-from :reddit.util
+                :logged-in-p
+                :makestr
+                :sanitize
+                :uid
+                :with-parameters)
+  (:import-from :reddit.view-defs
+                :article-id
+                :article-title
+                :article-url
+                :user-karma
+                :user-name))
+(in-package :reddit.frame)
 
 (defparameter *frame-height* "30px")
+
+(defmacro idstr (name)
+  `(format nil ,(conc name "~a") id))
 
 (defun reddit-frame (article)
   (with-html-output-to-string (*standard-output* nil :prologue "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Frameset//EN\" \"http://www.w3.org/TR/html4/frameset.dtd\">" :indent t)

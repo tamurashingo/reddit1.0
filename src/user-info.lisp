@@ -24,6 +24,8 @@
   (:import-from :clsql
                 :select)
   (:import-from :hunchentoot
+                :*session*
+                :session-value
                 :log-message*)
   (:import-from :reddit.data
                 :get-user
@@ -116,3 +118,18 @@
 
 (defun remove-info (id)
   (remhash id *user-info*))
+
+
+(defun uid ()
+  (and (ignore-errors *session*)
+       (session-value :user-id)))
+
+(defun logged-in-p ()
+  (uid))
+
+(defun info ()
+  (get-info (uid)))
+
+(defun userobj ()
+  (when-bind (info (info))
+    (user-obj info)))
