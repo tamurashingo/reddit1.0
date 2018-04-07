@@ -18,14 +18,10 @@
 ;;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;;;; SOFTWARE.
 
-(in-package #:cl-user)
+(in-package :cl-user)
 
-(defpackage #:reddit
-  (:use #:cl
-        #:tbnl
-        #:cl-ppcre
-        #:trivial-http
-        #:cl-who
-        #:clsql-user
-        #:cl-smtp
-        #:ironclad))
+(defpackage reddit
+  (:use :cl))
+(in-package :reddit)
+
+; blah blah blah
