@@ -31,13 +31,13 @@
                 :get-article)
   (:import-from :reddit.user-info
                 :get-info
+                :logged-in-p
+                :uid
                 :user-liked
                 :userobj)
   (:import-from :reddit.util
-                :logged-in-p
                 :makestr
                 :sanitize
-                :uid
                 :with-parameters)
   (:import-from :reddit.view-defs
                 :article-id

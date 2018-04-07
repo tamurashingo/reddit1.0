@@ -27,7 +27,7 @@
   (:export :user
            :user-id
            :user-name
-           :user-email
+           :user-emai
            :user-karma
            :user-date
            :user-ip

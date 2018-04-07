@@ -63,7 +63,7 @@
            :shorten-str
            :when-bind
            :when-bind*
-           :with-parameters)
+           :with-parameters))
 (in-package :reddit.util)
 
 

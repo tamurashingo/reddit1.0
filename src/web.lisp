@@ -103,6 +103,7 @@
                 :info
                 :logged-in-p
                 :remove-info
+                :uid
                 :user-alias
                 :user-clicked
                 :user-closed
@@ -122,7 +123,6 @@
                 :sanitize
                 :shorten-str
                 :tl-domain
-                :uid
                 :when-bind
                 :when-bind*
                 :with-parameters)
