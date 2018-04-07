@@ -18,7 +18,54 @@
 ;;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;;;; SOFTWARE.
 
-(in-package :reddit)
+(in-package :cl-user)
+(defpackage reddit.user-panel
+  (:use :cl)
+  (:import-from :cl-ppcre
+                :split)
+  (:import-from :cl-who
+                :conc
+                :esc
+                :fmt
+                :htm
+                :with-html-output)
+  (:import-from :clsql
+                :month-name)
+  (:import-from :hunchentoot
+                :script-name*)
+  (:import-from :reddit.data
+                :basic-info
+                :profile-visible
+                :user-email
+                :user-stats
+                :valid-user-p)
+  (:import-from :reddit.sites
+                :saved-sites)
+  (:import-from :reddit.user-info
+                :logged-in-p
+                :userobj)
+  (:import-from :reddit.util
+                :decode-user-url
+                :sanitize)
+  (:import-from :reddit.view-defs
+                :options-demoted
+                :options-frame
+                :options-numsites
+                :options-promoted
+                :options-visible
+                :user-name)
+  (:import-from :reddit.web
+                :browse-menu
+                :hbar
+                :login-panel
+                :options
+                :pbox
+                :profile-site-table
+                :reddit-page
+                :site-link
+                :top-menu))
+(in-package :reddit.user-panel)
+
 
 (defun saved-panel (name)
   (let ((sites (saved-sites (valid-user-p name))))
@@ -124,17 +171,6 @@
   (with-html-output (*standard-output*)
     (unless (logged-in-p) (login-panel))))
 
-(defun profile-site-table (profid display)
-  (with-parameters ((offset "offset"))
-    (setf offset (or (sanitize offset 'int) 0))
-    (multiple-value-bind (articles nextoff)
-        (get-sites-profile (uid) profid (options-numsites (options)) offset display)
-      (site-table articles (options-numsites (options)) offset
-                  nextoff (and (eql display :saved)
-                               (logged-in-p)
-                               (= (uid) profid))
-                  (eql display :hidden)))))
-
 
 (defun profile-page (name display)
   (with-html-output (*standard-output*)
@@ -155,7 +191,7 @@
       (t (base-info-panel user))))
 
 (defun page-user ()
-  (multiple-value-bind (user page) (decode-user-url (script-name))
+  (multiple-value-bind (user page) (decode-user-url (script-name*))
     (let ((user (valid-user-p user :return-sn t)))
       (if user
         (let ((page (sanitize page 'sym '(:basic :saved :promoted :submitted :hidden :demoted))))
