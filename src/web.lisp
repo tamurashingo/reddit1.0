@@ -18,7 +18,133 @@
 ;;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;;;; SOFTWARE.
 
-(in-package #:reddit)
+(in-package :cl-user)
+(defpackage reddit.web
+  (:use :cl)
+  (:import-from :cl-who
+                :conc
+                :esc
+                :escape-string-minimal
+                :fmt
+                :htm
+                :str
+                :with-html-output
+                :with-html-output-to-string)
+  (:import-from :clsql
+                :update-instance-from-records
+                :update-records-from-instance)
+  (:import-from :hunchentoot
+                :+HTTP-MOVED-PERMANENTLY+
+                :*dispatch-table*
+                :*reply*
+                :*session*
+                :cookie-in
+                :create-prefix-dispatcher
+                :create-regex-dispatcher
+                :create-static-file-dispatcher-and-handler
+                :get-parameter
+                :header-out
+                :log-message*
+                :post-parameter
+                :redirect
+                :return-code
+                :script-name*
+                :session-remote-addr
+                :session-value
+                :set-cookie
+                :start-session)
+  (:import-from :reddit.autocompute
+                :ac-update)
+  (:import-from :reddit.cookiehash
+                :cookie-str
+                :valid-cookie)
+  (:import-from :reddit.data
+                :add-user
+                :article-id-from-url
+                :change-password
+                :fake-user-p
+                :get-article
+                :get-article-sn
+                :insert-article
+                :like-and-mod
+                :login-from-email
+                :remove-alias
+                :remove-article
+                :set-alias
+                :top-submitters
+                :unlike-and-mod
+                :user-from-email
+                :valid-login-p
+                :valid-user-p
+                :view-link
+                :with-web-db)
+  (:import-from :reddit.frame
+                :reddit-frame)
+  (:import-from :reddit.mail
+                :send-login-info
+                :send-recommendation)
+  (:import-from :reddit.memcached
+                :cached)
+  (:import-from :reddit.recommend
+                :decode-aliases)
+  (:import-from :reddit.sites
+                :*cached-new*
+                :check-url
+                :close-site-sql
+                :get-articles
+                :get-search-sites
+                :get-sites-profile
+                :get-sites-user
+                :save-site
+                :unclose-site-sql
+                :unsave-site)
+  (:import-from :reddit.user-info
+                :get-info
+                :info
+                :logged-in-p
+                :remove-info
+                :user-alias
+                :user-clicked
+                :user-closed
+                :user-info-alias
+                :user-liked
+                :user-obj
+                :user-options
+                :user-saved
+                :userobj)
+  (:import-from :reddit.util
+                :2weeks
+                :age-str
+                :create-url
+                :esc-quote
+                :key-str
+                :makestr
+                :sanitize
+                :shorten-str
+                :tl-domain
+                :uid
+                :when-bind
+                :when-bind*
+                :with-parameters)
+  (:import-from :reddit.view-defs
+                :article-id
+                :article-date
+                :article-pop
+                :article-sn
+                :article-submitterid
+                :article-title
+                :article-url
+                :options
+                :options-demoted
+                :options-frame
+                :options-numsites
+                :options-promoted
+                :options-userid
+                :options-visible
+                :user-emai
+                :user-karma
+                :user-name))
+(in-package :reddit.web)
 
 (defparameter *num-submitters* 8)
 (defparameter *SESSION-MAX-TIME* 86400)
@@ -37,11 +163,6 @@
   `(with-html-output-to-string (*standard-output* nil :prologue t :indent nil)
      ,@body))
 
-;;TODO fix multiple eval of params
-(defmacro with-parameters (params &body body)
-  `(let (,@(mapcar  (lambda (x) `(,(first x) (or (post-parameter ,(second x))
-                                                 (get-parameter ,(second x))))) params))
-     ,@body))
 
 (defparameter *callbacks* (make-hash-table :test 'equal))
 
@@ -112,25 +233,11 @@
           (update-instance-from-records userobj)
           (update-instance-from-records options)))))
   
-(defun uid ()
-  (and (ignore-errors *session*)
-       (session-value :user-id)))
-
-(defun info ()
-  (get-info (uid)))
-
-(defun logged-in-p ()
-  (uid))
-
 (defun options ()
   (or (when-bind (info (info))
         (user-options info))
       *default-options*))
   
-(defun userobj ()
-  (when-bind (info (info))
-    (user-obj info)))
-
 (defmacro with-main ((&key (menu "empty") (right-panel) (rss-url)) &body body)
   `(with-html
      (:html 
@@ -172,8 +279,6 @@
                  (cached (,ck ,exp) (with-main (:menu ,menu :right-panel ,right-panel :rss-url ,rss-url) ,@body))
                  (with-main (:menu ,menu :right-panel ,right-panel :rss-url ,rss-url) ,@body)))))))
 
-(defmacro idstr (name)
-  `(format nil ,(conc name "~a") id))
 
 (defun redirect-url (url)
   (setf (header-out "Location")
@@ -286,7 +391,7 @@
 (defun options-panel ()
   (let ((options (session-value :display-opts)))
     (pbox "display"
-      (:form :method "get" :action (script-name) :class "nomargin"
+      (:form :method "get" :action (script-name*) :class "nomargin"
              (:input :type "hidden" :name "action" :value "options")
              (:table :style "border-collapse: collapse: cell-padding-top: 3px;" :width "100%"
                      (when (logged-in-p)
@@ -400,6 +505,9 @@
             (remhash name (user-info-alias info))
             (remove-alias (uid) name))))))
 
+(defmacro idstr (name)
+  `(format nil ,(conc name "~a") id))
+
 (defun site-link (id title url &optional clicked)
   (with-html-output (*standard-output*)
     (:a :id (idstr "title") :class (if clicked "title click" "title norm")
@@ -491,7 +599,7 @@
                                        ("q" . ,(get-parameter "q")))
                                      `(("offset" . ,nextoff)))))
                      (htm
-                      (:tr (:td :colspan "4" (:a :href (create-url (script-name) params)
+                      (:tr (:td :colspan "4" (:a :href (create-url (script-name*) params)
                                                  "View More"))))))))
         (htm (:span :class "error" "There are no sites that match your request")))))
 
@@ -621,7 +729,7 @@
         (htm
          (:script :src "/static/contacts.js" :language "javascript" :type "text/javascript" "")
          (:form
-          :onsubmit "return chksub()" :action (script-name) :method "post" :class "meat"
+          :onsubmit "return chksub()" :action (script-name*) :method "post" :class "meat"
           (:input :type "hidden" :name "action" :value "submit")
           (:input :type "hidden" :name "id" :value id)
           (let ((article (get-article-sn id)))
@@ -707,7 +815,7 @@
   (load-link (lucky)))
 
 (defun wrap-static-file (path)
-  (reddit-page (:cache-key (unless (logged-in-p) (key-str (script-name)))
+  (reddit-page (:cache-key (unless (logged-in-p) (key-str (script-name*)))
                            :exp 60
                            :menu (top-menu (browse-menu))
                            :right-panel (unless (logged-in-p) (login-panel))
@@ -718,8 +826,8 @@
          (format t "~a~%" line)))))
 
 (defun default-handler ()
-  (let ((path (and (> (length (script-name)) 1)
-                   (conc "/home/reddit/reddit/web/" (subseq (script-name) 1)))))
+  (let ((path (and (> (length (script-name*)) 1)
+                   (conc "/home/reddit/reddit/web/" (subseq (script-name*) 1)))))
     (if (and path (probe-file path))
         (wrap-static-file path)
         (page-default))))
@@ -740,6 +848,17 @@
   (page-main page-front :front "http://reddit.com/rss/hot")
   (page-main page-pop :pop "http://reddit.com/rss/pop")
   (page-main page-new :new "http://reddit.com/rss/new"))
+
+(defun profile-site-table (profid display)
+  (with-parameters ((offset "offset"))
+    (setf offset (or (sanitize offset 'int) 0))
+    (multiple-value-bind (articles nextoff)
+        (get-sites-profile (uid) profid (options-numsites (options)) offset display)
+      (site-table articles (options-numsites (options)) offset
+                  nextoff (and (eql display :saved)
+                               (logged-in-p)
+                               (= (uid) profid))
+                  (eql display :hidden)))))
 
 (defun page-default ()
   (page-front))
@@ -821,5 +940,6 @@
                '(("/blog/.+" default-handler)
                  ("/blog/?" page-blog)
                  ("/help/.+" default-handler)
-                 ("/help/?" page-help)))
-       (list #'default-dispatcher)))
+                 ("/help/?" page-help)))))
+
+
