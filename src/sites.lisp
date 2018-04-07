@@ -54,6 +54,8 @@
                 :article-with-sn))
 (in-package :reddit.sites)
 
+#.(clsql:file-enable-sql-reader-syntax)
+
 (defparameter *min-front-page-pop* 2)
 (defparameter *prob-threshold* .7)
 (defparameter *hot-factor* 2000)
@@ -70,7 +72,9 @@
                       (:new '(([articles_sn date] desc)))
                         (t `(;;(,(sql-operation 'function "recent_pop" [id]) desc)
                              (,[- [pop]
-                                  [/ (sql-operation 'function "seconds" [date]) *hot-factor*]] desc))))
+                                  ;; XXX: seconds is stored function?
+                                  ;;[/ (sql-operation 'function "seconds" [date]) *hot-factor*]] desc))))
+				  0] desc))))
           :offset offset
           :limit limit
           :flatp t
