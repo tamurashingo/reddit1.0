@@ -31,11 +31,11 @@
   (:import-from :reddit.data
                 :get-user
                 :user-pass)
-  (:import-from :reddit.view-defs
-                :user-id)
   (:import-from :reddit.util
                 :makestr
-                :when-bind*))
+                :when-bind*)
+  (:import-from :reddit.view-defs
+                :user-id))
 (in-package :reddit.cookiehash)
 
 (defparameter *secret* "blargo")

@@ -21,7 +21,13 @@
 (in-package :cl-user)
 
 (defpackage reddit
-  (:use :cl))
+  (:use :cl)
+  (:import-from :reddit.main
+                :initialize
+                :start-reddit
+                :stop-reddit)
+  (:export :initialize
+           :start-reddit
+           :stop-reddit))
 (in-package :reddit)
 
-; blah blah blah

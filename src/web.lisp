@@ -39,9 +39,6 @@
                 :*reply*
                 :*session*
                 :cookie-in
-                :create-prefix-dispatcher
-                :create-regex-dispatcher
-                :create-static-file-dispatcher-and-handler
                 :get-parameter
                 :header-out
                 :log-message*
@@ -904,42 +901,5 @@
 (defun page-test ()
   t)
 
-(setq *dispatch-table*
-      (nconc
-       (list (create-static-file-dispatcher-and-handler
-              "/favicon.ico"
-              (make-pathname :directory "/home/reddit/reddit/web/" :name "favicon" :type "ico" :version nil
-                             :defaults (load-time-value *load-pathname*))
-              "image/x-icon"))
-       (mapcar (lambda (args)
-                 (apply #'create-prefix-dispatcher args))
-               '(("/rss/new" rss-new)
-                 ("/rss/hot" rss-hot)
-                 ("/rss/pop" rss-pop)
-                 ("/viewlink" viewlink)
-                 ("/browse" page-default)
-                 ("/submit" page-submit)
-                 ("/hot" page-front)
-                 ("/pop" page-pop)
-                 ("/new" page-new)
-                 ("/saved" page-saved)
-                 ("/topsub" page-submitters)
-                 ("/search" page-search)
-                 ("/aop" ajax-op)
-                 ("/test" page-test)
-                 ("/logout" logout)
-                 ("/share" page-submit)
-                 ("/password" page-password)
-                 ("/lucky" page-lucky)
-                 ("/user/" page-user)
-                 ("/toolbar" reddit-toolbar)))
-       (list (create-static-file-dispatcher-and-handler
-              "/blog/atom.xml" "/home/reddit/reddit/web/blog/atom.xml" "text/xml"))
-       (mapcar (lambda (args)
-                 (apply #'create-regex-dispatcher args))
-               '(("/blog/.+" default-handler)
-                 ("/blog/?" page-blog)
-                 ("/help/.+" default-handler)
-                 ("/help/?" page-help)))))
 
 
