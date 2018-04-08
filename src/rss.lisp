@@ -18,7 +18,22 @@
 ;;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;;;; SOFTWARE.
 
-(in-package :reddit)
+(in-package :cl-user)
+(defpackage reddit.rss
+  (:use :cl)
+  (:import-from :cl-who
+                :conc
+                :esc
+                :escape-string
+                :htm
+                :with-html-output-to-string)
+  (:import-from :hunchentoot
+                :content-type*)
+  (:import-from :reddit.memcached
+                :cached)
+  (:import-from :reddit.sites
+                :get-articles-cached))
+(in-package :reddit.rss)
 
 (defun rss-sites (rssurl siteurl name sort)
   (let ((sites (get-articles-cached 25 0 sort)))
@@ -46,16 +61,16 @@
       (format t "</rdf:RDF>"))))
   
 (defun rss-hot ()
-  (setf (content-type) "text/xml")
+  (setf (content-type*) "text/xml")
   (cached ("rsshot" 900)
     (rss-sites "http://reddit.com/rss/hot" "http://reddit.com/" "hottest" :front)))
 
 (defun rss-new ()
-  (setf (content-type) "text/xml")
+  (setf (content-type*) "text/xml")
   (cached ("rssnew" 900)
     (rss-sites "http://reddit.com/rss/new" "http://reddit.com/new" "newest" :new)))
 
 (defun rss-pop ()
-  (setf (content-type) "text/xml")
+  (setf (content-type*) "text/xml")
   (cached ("rsspop" 900)
     (rss-sites "http://reddit.com/rss/pop" "http://reddit.com/pop" "top all-time" :pop)))
