@@ -24,6 +24,8 @@
   (:import-from :clsql
                 :def-view-class
                 :get-time)
+  (:import-from :clsql-sys
+                :wall-time)
   (:export :user
            :user-id
            :user-name
