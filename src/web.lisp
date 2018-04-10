@@ -347,7 +347,7 @@
         (htm (format nil "~a (~a)" (user-name (userobj)) (user-karma (userobj))))
         (htm (str "invalid")))))
 
-(define-callback logout ()
+(defun logout ()
   (with-html
     (log-message* "LOGOUT: ~a" (uid))
     (remove-info (uid))
