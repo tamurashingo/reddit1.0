@@ -80,12 +80,23 @@
           :flatp t
           :caching nil))
 
-(defparameter *cached-hot* (make-instance 'ac :name "cached-hot" :period 30
-                                          :fn #'(lambda () (with-web-db (get-articles 500 0 :front)))))
-(defparameter *cached-new* (make-instance 'ac :name "cached-new" :period 30
-                                          :fn #'(lambda () (with-web-db (get-articles 500 0 :new)))))
-(defparameter *cached-pop* (make-instance 'ac :name "cached-pop" :period 30
-                                          :fn #'(lambda () (with-web-db (get-articles 500 0 :pop)))))
+(defparameter *cached-hot* nil)
+(defparameter *cached-new* nil)
+(defparameter *cached-pop* nil)
+
+(defun create-cache ()
+  (setf *cached-hot* (make-instance 'ac :name "cached-hot" :period 30
+                                    :fn #'(lambda () (with-web-db (get-articles 500 0 :front)))))
+  (setf *cached-new* (make-instance 'ac :name "cached-new" :period 30
+                                    :fn #'(lambda () (with-web-db (get-articles 500 0 :new)))))
+  (setf *cached-pop* (make-instance 'ac :name "cached-pop" :period 30
+                                    :fn #'(lambda () (with-web-db (get-articles 500 0 :pop))))))
+
+(defun destroy-cache ()
+  (destroy-processes "cached-hot")
+  (destroy-processes "cached-new")
+  (destroy-processes "cached-pop"))
+
 
 ;;(defparameter *cached-hot* nil)
 ;;(defparameter *cached-new* nil)

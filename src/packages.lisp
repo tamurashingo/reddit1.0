@@ -23,11 +23,9 @@
 (defpackage reddit
   (:use :cl)
   (:import-from :reddit.main
-                :initialize
-                :start-reddit
-                :stop-reddit)
-  (:export :initialize
-           :start-reddit
-           :stop-reddit))
+                :startup-reddit
+                :shutdown-reddit)
+  (:export :startup-reddit
+           :shutdown-reddit))
 (in-package :reddit)
 

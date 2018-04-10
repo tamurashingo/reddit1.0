@@ -13,12 +13,18 @@
                 :easy-acceptor
                 :start
                 :stop)
+  (:import-from :reddit.data
+                :*conn-spec*
+                :*database-type*)
   (:import-from :reddit.frame
                 :reddit-toolbar)
   (:import-from :reddit.rss
                 :rss-hot
                 :rss-new
                 :rss-pop)
+  (:import-from :reddit.sites
+                :create-cache
+                :destroy-cache)
   (:import-from :reddit.user-panel
                 :page-user)
   (:import-from :reddit.web
@@ -45,17 +51,11 @@
 (defvar *reddit-acceptor* nil)
 (defvar *not-initialized* T)
 
-(defun initialize ()
+(defun initialize-once ()
   (when *not-initialized*
     (initialize-acceptor)
     (initialize-dispatch-table)
     (setf *not-initialized* nil)))
-
-(defun start-reddit ()
-  (start *reddit-acceptor*))
-
-(defun stop-reddit ()
-  (stop *reddit-acceptor*))
 
 (defun initialize-acceptor ()
   (setf *reddit-acceptor* (make-instance 'easy-acceptor :port 8000)))
@@ -98,3 +98,21 @@
                    ("/blog/?" page-blog)
                    ("/help/.+" default-handler)
                    ("/help/?" page-help))))))
+
+(defun connect-database ()
+  (clsql:connect *conn-spec* :database-type *database-type* :if-exists :old))
+(defun disconnect-database ()
+  (clsql:disconnect))
+
+(defun startup-reddit ()
+  (initialize-once)
+  (connect-database)
+  (create-cache)
+  (start *reddit-acceptor*))
+
+(defun shutdown-reddit ()
+  (stop *reddit-acceptor*)
+  (destroy-cache)
+  (disconnect-database))
+
+

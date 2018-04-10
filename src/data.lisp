@@ -79,7 +79,7 @@
   `(clsql:with-database (clsql:*default-database* *conn-spec* :pool t :database-type *database-type*)
      ,@body))
 
-(connect *conn-spec* :database-type *database-type* :if-exists :old)
+;(connect *conn-spec* :database-type *database-type* :if-exists :old)
 
 (setf *default-caching* nil)
 
@@ -443,7 +443,7 @@
               :limit num)))
 
   
-(defun valid-email (userid ip dest)
+0(defun valid-email (userid ip dest)
   (and userid ip dest
        (< (car (select [count [userid]] :from [emails]
                        :where [and [or [= userid [userid]]

@@ -9,7 +9,7 @@
 - smtp server
 
 
-## database
+## Database
 
 ### PostgreSQL
 
@@ -28,7 +28,7 @@ load `reddit-db` like
 (ql:quickload :reddit-db)
 ```
 
-#### log
+#### Log
 
 on PostgreSQL, there's no tables.
 
@@ -206,11 +206,9 @@ Indexes:
 ```
 
 
-## application server
+## Application Server
 
-To start, load, initialize, and start.
-
-### load
+### Load
 
 ```
 CL-USER> (ql:quickload :reddit)
@@ -234,26 +232,18 @@ To load "reddit":
 (:REDDIT)
 ```
 
-### initialize
+### Start
 
 ```
-CL-USER> (reddit:initialize)
-NIL
-```
-
-### start
-
-```
-CL-USER> (reddit:start-reddit)
+CL-USER> (reddit:startup-reddit)
 #<HUNCHENTOOT:EASY-ACCEPTOR (host *, port 8000)>
 ```
 
-
-### stop
+### Stop
 
 ```
-CL-USER> (reddit:stop-reddit)
-#<HUNCHENTOOT:EASY-ACCEPTOR (host *, port 8000)>
+CL-USER> (reddit:shutdown-reddit)
+T
 ```
 
 ---
