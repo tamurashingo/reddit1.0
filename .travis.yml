@@ -20,7 +20,7 @@ install:
 before_script:
   - psql -c 'create database "reddit";' -U postgres
   - psql -c "CREATE USER test WITH PASSWORD 'test';" -U postgres
-  - ros run -- --eval '(asdf:load-asd "reddit-db.asdd")(quit)'
+  - ros run -- --eval '(prog1 (asdf:load-asd "reddit-db.asdd")(quit))'
 
 script:
   - run-prove reddit-test.asd
