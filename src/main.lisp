@@ -13,6 +13,9 @@
                 :easy-acceptor
                 :start
                 :stop)
+  (:import-from :reddit.config
+                :config
+                :set-environment)
   (:import-from :reddit.data
                 :*conn-spec*
                 :*database-type*)
@@ -54,8 +57,10 @@
 (defun initialize-once ()
   (when *not-initialized*
     (initialize-acceptor)
-    (initialize-dispatch-table)
     (setf *not-initialized* nil)))
+
+(defun initialize ()
+  (initialize-dispatch-table))
 
 (defun initialize-acceptor ()
   (setf *reddit-acceptor* (make-instance 'easy-acceptor :port 8000)))
@@ -65,7 +70,7 @@
         (nconc
          (list (create-static-file-dispatcher-and-handler
                 "/favicon.ico"
-                (make-pathname :directory "/home/reddit/reddit/web/" :name "favicon" :type "ico" :version nil
+                (make-pathname :directory (config :favicon-path) :name "favicon" :type "ico" :version nil
                                :defaults (load-time-value *load-pathname*))
                 "image/x-icon"))
          (mapcar (lambda (args)
@@ -91,7 +96,7 @@
                    ("/user/" page-user)
                    ("/toolbar" reddit-toolbar)))
          (list (create-static-file-dispatcher-and-handler
-                "/blog/atom.xml" "/home/reddit/reddit/web/blog/atom.xml" "text/xml"))
+                "/blog/atom.xml" (config :atom-path) "text/xml"))
          (mapcar (lambda (args)
                    (apply #'create-regex-dispatcher args))
                  '(("/blog/.+" default-handler)
@@ -100,12 +105,22 @@
                    ("/help/?" page-help))))))
 
 (defun connect-database ()
-  (clsql:connect *conn-spec* :database-type *database-type* :if-exists :old))
+  (clsql:connect
+   `(,(config :database-server)
+      ,(config :database-name)
+      ,(config :datbase-user)
+      ,(config :database-password))
+   :database-type (config :database-type)
+   :if-exists :old))
+
 (defun disconnect-database ()
   (clsql:disconnect))
 
-(defun startup-reddit ()
+(defun startup-reddit (&key env)
+  (when (not (null env))
+    (set-environment env))
   (initialize-once)
+  (initialize)
   (connect-database)
   (create-cache)
   (start *reddit-acceptor*))

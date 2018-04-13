@@ -21,7 +21,8 @@
   :components ((:module "src"
                 :components
                 ((:file "packages" :depends-on ("main"))
-                 (:file "main" :depends-on ("frame" "rss" "user-panel" "web"))
+                 (:file "main" :depends-on ("config" "frame" "rss" "user-panel" "web"))
+                 (:file "config")
                  (:file "cookiehash" :depends-on ("data" "view-defs" "util"))
                  (:file "recommend" :depends-on ("user-info"))
                  (:file "frame" :depends-on ("data" "user-info" "util" "view-defs"))
