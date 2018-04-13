@@ -14,7 +14,11 @@
     (
      ;; environment
      :environment "production"
-     
+
+     ;; static files
+     :favicon-path "/home/reddit/reddit/web/"
+     :atom-path "/home/reddit/reddit/web/blog/atom.xml"
+
      ;; for cookie hash
      :hash-salt "blargo"
 
@@ -24,13 +28,13 @@
      :database-user "pgsql"
      :database-password "pgcwip42:"
      :database-server ""
-     
+
      ;; mail
      :mail-prog "/usr/bin/mail"
      :mail-user "ZG1haWw="
      :mail-pass "Ymxhcmc="
      :mail-server "216.55.162.13"
-     
+
      ;; memcached
      :memcached-server "127.0.0.1"
      :memcached-port 11211)
@@ -39,7 +43,11 @@
     (
      ;; environment
      :environment "development"
-     
+
+     ;; static files
+     :favicon-path "/home/reddit/reddit/web/"
+     :atom-path "/home/reddit/reddit/web/blog/atom.xml"
+
      ;; for cookie hash
      :hash-salt "blargo"
 
@@ -64,7 +72,11 @@
     (
      ;; environment
      :environment "test"
-     
+
+     ;; static files
+     :favicon-path "/home/reddit/reddit/web/"
+     :atom-path "/home/reddit/reddit/web/blog/atom.xml"
+
      ;; for cookie hash
      :hash-salt "blargo"
 
@@ -91,5 +103,8 @@
   (setf *environment* env))
 
 
-(defun config ()
-  (getf *config* *environment*))
+(defun config (&optional key)
+  (let ((env (getf *config* *environment*)))
+    (if key
+        (getf env key)
+        env)))
