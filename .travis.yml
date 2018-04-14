@@ -23,7 +23,7 @@ before_script:
 #  - ros run -- --eval '(prog1 (asdf:load-asd "reddit-db.asd")(quit))'
   - ros install ./reddit.asd
   - ros install ./reddit-db.asd
-  - ros run -- --eval '(prog1 (reddit.config:set-environment :test)(reddit.db.migration::migrate)(quit))'
+  - ros run -- --eval '(prog1 (require 'reddit.config)(reddit.config:set-environment :test)(reddit.db.migration::migrate)(quit))'
 
 script:
   - run-prove reddit-test.asd
