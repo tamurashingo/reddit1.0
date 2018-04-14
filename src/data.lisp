@@ -28,6 +28,7 @@
                 :delete-instance-records
                 :get-time
                 :insert-records
+                :locally-disable-sql-reader-syntax
                 :locally-enable-sql-reader-syntax
                 :make-duration
                 :select
@@ -471,3 +472,6 @@
                 (select [*] :from [closed_sites] :where [= [userid] userid])
                 (select [*] :from [saved_sites] :where [= [userid] userid])
                 (select [*] :from [clicks] :where [= [userid] userid]))))
+
+(locally-disable-sql-reader-syntax)
+

@@ -14,7 +14,7 @@
                :prove)
   :components ((:module "t"
                 :components
-                ((:test-file "cookiehash"))))
+                ((:test-file "data"))))
   :description "Test system for reddit"
   
   :defsystem-depends-on (:prove-asdf)
