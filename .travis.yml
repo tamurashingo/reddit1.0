@@ -15,23 +15,13 @@ env:
 install:
   # Install Roswell
   - curl -L https://raw.githubusercontent.com/roswell/roswell/release/scripts/install-for-ci.sh | sh
-  - ros install prove
-  - ros install hunchentoot
-  - ros install bordeaux-threads
-  - ros install cl-ppcre
-  - ros install trivial-http
-  - ros install cl-who
-  - ros install clsql
-  - ros install clsql-postgresql
-  - ros install cl-smtp
-  - ros install ironclad
-  - ros install cl-memcached
 
 
 before_script:
   - psql -c 'create database "reddit";' -U postgres
   - psql -c "CREATE USER test WITH PASSWORD 'test';" -U postgres
-  - ros run -- --eval '(prog1 (asdf:load-asd "reddit-db.asdd")(quit))'
+#  - ros run -- --eval '(prog1 (asdf:load-asd "reddit-db.asd")(quit))'
+  - ros install reddit-db.asd
 
 script:
   - run-prove reddit-test.asd
