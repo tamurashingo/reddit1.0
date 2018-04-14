@@ -22,6 +22,7 @@ before_script:
   - psql -c "CREATE USER test WITH PASSWORD 'test';" -U postgres
 #  - ros run -- --eval '(prog1 (asdf:load-asd "reddit-db.asd")(quit))'
   - ros install ./reddit-db.asd
+  - ros run -- --eval '(prog1 (reddit.config:set-environment :test)(reddit.db.migration::migrate)(quit))'
 
 script:
   - run-prove reddit-test.asd
