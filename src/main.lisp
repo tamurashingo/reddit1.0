@@ -47,7 +47,9 @@
                 :page-lucky
                 :default-handler
                 :page-blog
-                :page-help))
+                :page-help)
+  (:export :connect-database
+           :disconnect-database))
 (in-package :reddit.main)
 
 

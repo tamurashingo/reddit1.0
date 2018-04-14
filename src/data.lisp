@@ -59,7 +59,8 @@
   (:import-from :reddit.util
                 :add-http
                 :base-url
-                :when-bind))
+                :when-bind)
+  (:export :add-user))
 (in-package :reddit.data)
 
 
