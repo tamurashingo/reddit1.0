@@ -25,8 +25,5 @@ before_script:
   - ros install ./reddit-db.asd
   - ros run -- --eval "(require 'reddit)" --eval "(reddit.config:set-environment :test)" --eval "(reddit.main::connect-database)" --eval "(reddit.db.migration::migrate)" --eval "(reddit.main::disconnect-database)" --eval "(quit)"
 
-
-'(prog1 (require 'reddit.config)(reddit.config:set-environment :test)(reddit.db.migration::migrate)(quit))'
-
 script:
   - run-prove reddit-test.asd
