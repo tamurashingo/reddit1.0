@@ -1,0 +1,29 @@
+language: common-lisp
+sudo: false
+
+addons:
+  postgresql: "9.4"
+
+services:
+  - postgresql
+
+env:
+  global:
+    - PATH=$HOME/.roswell/bin:$PATH
+    - ROSWELL_INSTALL_DIR=$HOME/.roswell
+
+install:
+  # Install Roswell
+  - curl -L https://raw.githubusercontent.com/roswell/roswell/release/scripts/install-for-ci.sh | sh
+  - ros install prove
+
+before_script:
+  - psql -c 'create database "reddit";' -U postgres
+  - psql -c "CREATE USER test WITH PASSWORD 'test';" -U postgres
+  - ros install ./reddit.asd
+  - ros install ./reddit-db.asd
+  # database migration
+  - ros run -- --eval "(require 'reddit)" --eval "(require 'reddit-db)" --eval "(reddit.config:set-environment :test)" --eval "(reddit.main::connect-database)" --eval "(reddit.db.migration::migrate)" --eval "(reddit.main::disconnect-database)" --eval "(quit)"
+
+script:
+  - run-prove reddit-test.asd

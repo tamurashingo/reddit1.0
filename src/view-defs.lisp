@@ -100,6 +100,8 @@
    (email
     :type string
     :accessor user-emai)
+   (password
+    :type string)
    (karma
     :type integer
     :reader user-karma)

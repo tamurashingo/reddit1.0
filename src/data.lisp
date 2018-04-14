@@ -28,6 +28,7 @@
                 :delete-instance-records
                 :get-time
                 :insert-records
+                :locally-disable-sql-reader-syntax
                 :locally-enable-sql-reader-syntax
                 :make-duration
                 :select
@@ -142,7 +143,9 @@
  (let ((id (if neg
                 (- (sequence-next[userid]))
                 (sequence-next[userid]))))
-    (insert-records :into [users] :values (list id name email pass 0 [current_timestamp] ip))
+   (insert-records :into [users]
+                   :attributes '(id screenname email password karma signupdate ip)
+                   :values (list id name email pass 0 [current_timestamp] ip))
     id))
 
 
@@ -471,3 +474,6 @@
                 (select [*] :from [closed_sites] :where [= [userid] userid])
                 (select [*] :from [saved_sites] :where [= [userid] userid])
                 (select [*] :from [clicks] :where [= [userid] userid]))))
+
+(locally-disable-sql-reader-syntax)
+
