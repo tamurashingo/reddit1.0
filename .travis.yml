@@ -23,7 +23,7 @@ before_script:
 #  - ros run -- --eval '(prog1 (asdf:load-asd "reddit-db.asd")(quit))'
   - ros install ./reddit.asd
   - ros install ./reddit-db.asd
-  - ros run -- --eval "(require 'reddit)" --eval "(reddit.config:set-environment :test)" --eval "(reddit.main::connect-database)" --eval "(reddit.db.migration::migrate)" --eval "(reddit.main::disconnect-database)" --eval "(quit)"
+  - ros run -- --eval "(require 'reddit)" --eval "(require 'reddit-db)" --eval "(reddit.config:set-environment :test)" --eval "(reddit.main::connect-database)" --eval "(reddit.db.migration::migrate)" --eval "(reddit.main::disconnect-database)" --eval "(quit)"
 
 script:
   - run-prove reddit-test.asd
