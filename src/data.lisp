@@ -144,7 +144,7 @@
                 (- (sequence-next[userid]))
                 (sequence-next[userid]))))
    (insert-records :into [users]
-                   :attributes '(id screenname email karma signupdate ip)
+                   :attributes '(id screenname email password karma signupdate ip)
                    :values (list id name email pass 0 [current_timestamp] ip))
     id))
 
