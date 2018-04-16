@@ -7,8 +7,6 @@
                 :set-environment))
 (in-package :reddit-test.data)
 
-(set-environment :test)
-(reddit.main::connect-database)
 
 (plan nil)
 
@@ -21,5 +19,3 @@
 
 
 (finalize)
-
-(reddit.main::disconnect-database)

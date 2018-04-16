@@ -8,11 +8,7 @@
 (plan nil)
 
 
-;;; prepare
-
-(reddit.config:set-environment :test)
-(reddit.main:connect-database)
-
+;; prepare
 (reddit.data:add-user "cookiehash" "cookiehash@sample.com" "password" "192.168.0.1")
 
 
@@ -22,7 +18,5 @@
 (isnt (valid-cookie *hash*)
       nil)
 
-
-(reddit.main:disconnect-database)
 
 (finalize)
