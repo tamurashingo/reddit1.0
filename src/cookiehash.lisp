@@ -28,7 +28,7 @@
                 :ascii-string-to-byte-array
                 :byte-array-to-hex-string
                 :digest-sequence)
-  (:import-from :reddit.conf
+  (:import-from :reddit.config
                 :config)
   (:import-from :reddit.data
                 :get-user
