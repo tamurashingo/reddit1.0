@@ -55,11 +55,13 @@
                 :moduser-date
                 :moduser-ip
                 :options-visible
+                :user
                 :user-karma)
   (:import-from :reddit.util
                 :add-http
                 :base-url
-                :when-bind))
+                :when-bind)
+  (:export :add-user))
 (in-package :reddit.data)
 
 

@@ -13,8 +13,12 @@
   :depends-on (:reddit
                :prove)
   :components ((:module "t"
+                :serial T
                 :components
-                ((:test-file "data"))))
+                ((:test-file "startup")
+                 (:test-file "data")
+                 (:test-file "cookiehash")
+                 (:test-file "teardown"))))
   :description "Test system for reddit"
   
   :defsystem-depends-on (:prove-asdf)
