@@ -1,6 +1,7 @@
 (in-package :cl-user)
 (defpackage :reddit-test.startup
-  (:use :cl)
+  (:use :cl
+        :prove)
   (:import-from :reddit.config
                 :set-environment))
 (in-package :reddit-test.startup)
