@@ -23,12 +23,12 @@
   (isnt (get-user "data1")
         nil)
   (is-type (get-user "data1")
-           'user)
+           'reddit.view-defs:user)
 
   (isnt (get-user *data1-id*)
         nil)
   (is-type (get-user *data1-id*)
-           'user))
+           'reddit.view-defs:user))
 
 
 ;; valid-login-p
