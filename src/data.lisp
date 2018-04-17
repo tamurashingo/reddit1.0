@@ -62,7 +62,10 @@
                 :base-url
                 :when-bind)
   (:export :add-user
-           :valid-login-p))
+           :user-pass
+           :get-user
+           :valid-login-p
+           :valid-user-p))
 (in-package :reddit.data)
 
 
