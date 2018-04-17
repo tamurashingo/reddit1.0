@@ -10,12 +10,31 @@
 
 (plan nil)
 
+(defparameter *data1-id* (add-user "data1" "data1@sample.com" "password" "192.168.0.1"))
 
-(reddit.data::valid-user-p "foo")
+;; user-pass
+(is (user-pass "data1")
+    "password")
 
-(reddit.data::add-user "foo" "foo@sample.com" "password" "192.168.0.1")
 
-(reddit.data::valid-user-p "foo")
+;; get-user
+(isnt (get-user "data1")
+      nil)
+(is-type (get-user "data1")
+         'user)
+
+(isnt (get-user *data1-id*)
+      nil)
+(is-type (get-user *data1-id*)
+         'user)
+
+
+;; valid-login-p
+(is (valid-login-p "data1" "password")
+    *data1-id*)
+
+(is (valid-login-p "data1" "invalid password")
+    nil)
 
 
 (finalize)
