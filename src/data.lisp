@@ -61,7 +61,8 @@
                 :add-http
                 :base-url
                 :when-bind)
-  (:export :add-user))
+  (:export :add-user
+           :valid-login-p))
 (in-package :reddit.data)
 
 
