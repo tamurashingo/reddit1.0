@@ -4,3 +4,10 @@
 (in-package :reddit-test.teardown)
 
 (reddit.main:disconnect-database)
+
+(plan nil)
+
+(pass "database disconnected")
+
+
+(finalize)

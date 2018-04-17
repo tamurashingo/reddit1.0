@@ -8,3 +8,9 @@
 (set-environment :test)
 (reddit.main:connect-database)
 
+(plan nil)
+
+(pass "database connected")
+
+
+(finalize)
