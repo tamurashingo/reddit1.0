@@ -28,6 +28,8 @@
                 :ascii-string-to-byte-array
                 :byte-array-to-hex-string
                 :digest-sequence)
+  (:import-from :reddit.conf
+                :config)
   (:import-from :reddit.data
                 :get-user
                 :user-pass)
@@ -40,8 +42,6 @@
            :valid-cookie))
 (in-package :reddit.cookiehash)
 
-(defparameter *secret* "blargo")
-
 (defun iso-time ()
   (let ((itime (format-time nil (get-time) :format :iso)))
     (subseq itime 0 (position #\, itime))))
@@ -52,7 +52,7 @@
 (defun cookie-str (sn pass)
   (let ((time (iso-time)))
     (makestr sn "," time ","
-             (hashstr (makestr time sn pass *secret*)))))
+             (hashstr (makestr time sn pass (config :hash-salt))))))
 
 (defun valid-cookie (str)
   "returns the userid for cookie if valid, otherwise nil"
@@ -61,7 +61,7 @@
                  (time (subseq str (+ 1 (length sn)) (position #\, str :from-end t :test #'char=)))
                  (hash (subseq str (+ (length sn) (length time) 2)))
                  (pass (user-pass sn)))
-      (when (string= hash (hashstr (makestr time sn pass *secret*)))
+      (when (string= hash (hashstr (makestr time sn pass (config :hash-salt))))
         (user-id (get-user sn))))))
 
 
