@@ -18,7 +18,8 @@
   :components ((:module "src"
                 :components
                 ((:file "view-defs")
-                 (:file "data" :depends-on ("view-defs" "util"))
+                 (:file "data" :depends-on ("logging" "view-defs" "util"))
+                 (:file "logging")
                  (:file "util")))
                (:module "db"
                 :components
