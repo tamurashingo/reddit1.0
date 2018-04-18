@@ -11,7 +11,7 @@
 
 (plan nil)
 
-(defparameter *data1-id* (add-user "data1" "data1@sample.com" "password" "192.168.0.1"))
+(defparameter *user-data1-id* (add-user "data1" "data1@sample.com" "password" "192.168.0.1"))
 
 ;; user-pass
 (subtest "user-pass"
@@ -26,16 +26,16 @@
   (is-type (get-user "data1")
            'reddit.view-defs:user)
 
-  (isnt (get-user *data1-id*)
+  (isnt (get-user *user-data1-id*)
         nil)
-  (is-type (get-user *data1-id*)
+  (is-type (get-user *user-data1-id*)
            'reddit.view-defs:user))
 
 
 ;; valid-login-p
 (subtest "vaid-login-p"
   (is (valid-login-p "data1" "password")
-      *data1-id*)
+      *user-data1-id*)
 
   (is (valid-login-p "data1" "invalid password")
       nil))
@@ -44,18 +44,18 @@
 ;; valid-user-p
 (subtest "valid-user-p"
   (is (valid-user-p "data1")
-      *data1-id*
+      *user-data1-id*
       "by name")
 
-  (is (valid-user-p *data1-id*)
-      *data1-id*
+  (is (valid-user-p *user-data1-id*)
+      *user-data1-id*
       "by id")
 
   (is (valid-user-p "data1" :return-sn T)
       "data1"
       "by name returns name")
 
-  (is (valid-user-p *data1-id* :return-sn T)
+  (is (valid-user-p *user-data1-id* :return-sn T)
       "data1"
       "by id returns name")
 
@@ -142,6 +142,12 @@
   (handler-case (add-user "add-user-1" "add-user-1-error@sample.com" "error" "192.168.0.4")
     (error () (ok "user already exists"))
     (:no-error () (fail "no signal"))))
+
+
+
+;; insert-article
+(defparameter *article-user-id* (add-user "article-user" "article@sample.com" "password" "192.168.0.1"))
+(insert-article "title" "http://sample.com" *article-user-id* "192.168.0.1")
 
 (finalize)
 
