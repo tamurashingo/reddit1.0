@@ -38,4 +38,5 @@
                  (:file "rss" :depends-on ("memcached" "sites"))
                  (:file "sites" :depends-on ("autocompute" "data" "search" "user-info" "util" "view-defs"))
                  (:file "mail" :depends-on ("data"))
-                 (:file "user-panel" :depends-on ("data" "sites" "user-info" "util" "view-defs" "web"))))))
+                 (:file "user-panel" :depends-on ("data" "sites" "user-info" "util" "view-defs" "web"))
+                 (:file "logging")))))
