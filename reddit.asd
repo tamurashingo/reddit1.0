@@ -29,7 +29,7 @@
                  (:file "autocompute")
                  (:file "user-info" :depends-on ("data" "util"))
                  (:file "web" :depends-on ("autocompute" "cookiehash" "data" "frame" "mail" "memcached" "recommend" "sites" "user-info" "util" "view-defs"))
-                 (:file "data" :depends-on ("view-defs" "util"))
+                 (:file "data" :depends-on ("logging" "view-defs" "util"))
                  (:file "view-defs")
                  (:file "util")
                  (:file "search")

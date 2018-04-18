@@ -38,8 +38,8 @@
                 :time<
                 :update-records
                 :update-records-from-instance)
-  (:import-from :hunchentoot
-                :log-message*)
+  (:import-from :reddit.logging
+                :log-message)
   (:import-from :reddit.view-defs
                 :article
                 :alias-name
@@ -278,8 +278,8 @@
   (when (and userid targetid articleid ip amount)
     (let ((moduser (or (get-mod-user userid targetid articleid )
                        (make-instance 'moduser :userid userid :targetid targetid :articleid articleid))))
-;      (log-message* "MOD-USER: userid: ~a target: ~a article: ~a ip: ~a amount: ~a"
-;                    userid targetid articleid ip amount)
+      (log-message :info "MOD-USER: userid: ~a target: ~a article: ~a ip: ~a amount: ~a"
+                   userid targetid articleid ip amount)
       (setf (moduser-amount moduser) amount
             (moduser-date moduser) (get-time)
             (moduser-ip moduser) ip)
@@ -302,8 +302,8 @@
   (and userid articleid ip amount
        (let ((modarticle (or (get-mod-article userid articleid)
                              (make-instance 'modarticle :userid userid :articleid articleid))))
-;         (log-message* "MOD-ARTICLE: userid: ~a article: ~a ip: ~a amount: ~a"
-;                     userid articleid ip amount)
+         (log-message :info "MOD-ARTICLE: userid: ~a article: ~a ip: ~a amount: ~a"
+                      userid articleid ip amount)
          (setf (modarticle-amount modarticle) amount
                (modarticle-ip modarticle) ip
                (modarticle-date modarticle) (get-time))
@@ -314,7 +314,7 @@
   (and articleid ip
        (when-valid (:userid userid :articleid articleid :ip ip)
          (let ((click (make-instance 'click :userid userid :articleid articleid :ip ip)))
-;           (log-message* "CLICK user: ~a article: ~a ip: ~a" userid articleid ip)
+           (log-message :info "CLICK user: ~a article: ~a ip: ~a" userid articleid ip)
            (update-records-from-instance click)))))
 
 
@@ -331,7 +331,7 @@
 
 (defun like-site (userid articleid liked)
   "Inserts or updates a user's liking of a site."
-  ;(log-message* "LIKE user: ~a article: ~a like: ~a" userid articleid liked)
+  (log-message :info "LIKE user: ~a article: ~a like: ~a" userid articleid liked)
   (and userid articleid
        (let ((like (or (get-like-site userid articleid)
                        (make-instance 'like :userid userid :articleid articleid))))
@@ -342,7 +342,7 @@
 (defun unlike-site (userid articleid)
   (and userid articleid
        (progn
-;         (log-message* "UNLIKE user: ~a article: ~a" userid articleid)
+         (log-message :info "UNLIKE user: ~a article: ~a" userid articleid)
          (when-bind (like (get-like-site userid articleid))
            (delete-instance-records like)))))
 

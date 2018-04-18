@@ -7,6 +7,7 @@
 (in-package :reddit-test.startup)
 
 (set-environment :test)
+(reddit.logging:initialize-logger :stdout)
 (reddit.main:connect-database)
 
 (plan nil)

@@ -10,4 +10,4 @@
 (setf reddit.logging::*logger* (make-instance '<stdout-logger>))
 
 (defmethod log-message-logger ((logger <stdout-logger>) log-level format-string &rest format-arguments)
-  (apply #'format T (concatenate 'string "[~A]" format-string) log-level format-arguments))
+  (apply #'format T (concatenate 'string "[~A]" format-string "~%") log-level format-arguments))
