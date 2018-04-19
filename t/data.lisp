@@ -147,7 +147,17 @@
 
 ;; insert-article
 (defparameter *article-user-id* (add-user "article-user" "article@sample.com" "password" "192.168.0.1"))
-(insert-article "title" "http://sample.com" *article-user-id* "192.168.0.1")
+(subtest "insert-article"
+  (let ((article (insert-article "title" "http://sample.com/1.html" *article-user-id* "192.168.0.1")))
+    (isnt article nil)
+    (let ((article-db (get-article (reddit.view-defs:article-id article))))
+      (is (reddit.view-defs:article-url article-db)
+          "http://sample.com/1.html")
+      (is (reddit.view-defs:article-title article-db)
+          "title")
+      (is (reddit.view-defs:article-submitterid article-db)
+          *article-user-id*))))
+
 
 (finalize)
 

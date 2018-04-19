@@ -72,7 +72,8 @@
            :get-user
            :valid-login-p
            :valid-user-p
-           :insert-article))
+           :insert-article
+           :get-article))
 (in-package :reddit.data)
 
 
