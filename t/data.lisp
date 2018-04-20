@@ -148,6 +148,7 @@
 ;; insert-article
 (defparameter *article-user-id* (add-user "article-user" "article@sample.com" "password" "192.168.0.1"))
 (subtest "insert-article"
+  (diag "normal pattern")
   (let ((article (insert-article "title" "http://sample.com/1.html" *article-user-id* "192.168.0.1")))
     (isnt article nil)
     (let ((article-db (get-article (reddit.view-defs:article-id article))))
@@ -156,7 +157,38 @@
       (is (reddit.view-defs:article-title article-db)
           "title")
       (is (reddit.view-defs:article-submitterid article-db)
-          *article-user-id*))))
+          *article-user-id*)))
+
+  (diag "another user calls insert-article")
+  (let* ((another-user (add-user "article-user2" "article-2@sample.com" "password" "192.168.0.2"))
+         (article (insert-article "title-2" "http://sample.com/1.html" another-user "192.168.0.2")))
+    (is article nil))
+
+  (diag "title is nil")
+  (let ((article (insert-article nil "http://sample.com/2.html" *article-user-id* "192.168.0.3")))
+    (is article nil))
+
+  (diag "url is nil")
+  (let ((article (insert-article "title-3" nil *article-user-id* "192.168.0.4")))
+    (is article nil))
+
+  (diag "submitter is nil")
+  (let ((article (insert-article "title-4" "http://sample.com/3.html" nil "192.168.0.5")))
+    (is article nil))
+
+  (diag "ip is nil")
+  (let ((article (insert-article "title-5" "http://sample.com/4.html" *article-user-id* nil)))
+    (is article nil))
+
+  (diag "exist fake user")
+  (add-user "article-fake-user" "article-fake-user@sample.com" "password" "192.168.0.6" T)
+  (let ((article (insert-article "title-6" "http://sample.com/6.html" *article-user-id* "192.168.0.0.6" "article-fake-user")))
+    (isnt article nil)
+    (is (reddit.view-defs:article-url article)
+        "http://sample.com/6.html")
+    (is (reddit.view-defs:article-title article)
+        "title-6")
+    (ok (< (reddit.view-defs:article-submitterid article) 0))))
 
 
 (finalize)
