@@ -190,6 +190,29 @@
         "title-6")
     (ok (< (reddit.view-defs:article-submitterid article) 0))))
 
+;; get-article
+(defparameter *article-id* (insert-article "get-article-test" "http://sample.com/get-article.html" *article-user-id* "192.168.0.1"))
+(subtest "get-article"
+  (diag "get-article by id")
+  (let ((article (get-article *article-id*)))
+    (isnt article nil)
+    (is (reddit.view-defs:article-url article)
+        "http://sample.com/get-article.html")
+    (is (reddit.view-defs:article-title article)
+        "get-article-test"))
+
+  (diag "get-article by title")
+  (let ((article (get-article "get-article-test")))
+    (isnt article nil)
+    (is (reddit.view-defs:article-url article)
+        "http://sample.com/get-article.html")
+    (is (reddit.view-defs:article-title article)
+        "get-article-test")))
+
+
+
+
+
 
 (finalize)
 
