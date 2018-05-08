@@ -8,7 +8,6 @@
   (:import-from :reddit.view-defs
                 :user
                 :article
-                :article-with-sn
                 :wtf
                 :click
                 :like
@@ -24,7 +23,6 @@
 (defun migrate ()
   (clsql:create-view-from-class 'user)
   (clsql:create-view-from-class 'article)
-  (clsql:create-view-from-class 'article-with-sn)
   (clsql:create-view-from-class 'wtf)
   (clsql:create-view-from-class 'click)
   (clsql:create-view-from-class 'like)

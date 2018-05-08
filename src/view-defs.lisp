@@ -41,8 +41,6 @@
            :article-submitterid
            :article-submitter
            :article-pop
-           :article-with-sn
-           :article-sn
            :wtf
            :wtf-userid
            :wtf-user
@@ -148,12 +146,6 @@
     :type integer
     :reader article-pop))
   (:base-table articles))
-
-(def-view-class article-with-sn (article)
-  ((screenname
-    :reader article-sn
-    :type string))
-  (:base-table articles_sn))
 
 ;;wtf
 (def-view-class wtf ()

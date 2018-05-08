@@ -33,7 +33,6 @@
                 :destroy-processes)
   (:import-from :reddit.data
                 :article-id-from-url
-                :get-article-sn
                 :with-web-db)
   (:import-from :reddit.search
                 :search-sites)
@@ -50,8 +49,7 @@
                 :website-title)
   (:import-from :reddit.view-defs
                 :article-id
-                :article-title
-                :article-with-sn))
+                :article-title))
 (in-package :reddit.sites)
 
 #.(clsql:file-enable-sql-reader-syntax)
@@ -65,7 +63,7 @@
 (destroy-processes "cached-pop")
 
 (defun get-articles (&optional (limit 25) (offset 0) (sort :front))
-  (select 'article-with-sn
+  (select 'article
           :where  (if (eql sort :front) [> [pop] *min-front-page-pop*] t)
           :order-by (case sort
                       (:pop '(([pop] desc)))
@@ -113,7 +111,7 @@
   
 (defun profile-sites (userid limit offset display)
   "display can be :saved :hidden :submitted :promoted :demoted"
-  (select 'article-with-sn
+  (select 'article
           :where (case display
                    (:saved [and [= userid [saved_sites userid]]
                                 [= [articles_sn id] [saved_sites article]]])
@@ -187,7 +185,7 @@
 (defun check-url (url)
   "Returns the title for this url."
   (let* ((url (add-http url))
-         (article (get-article-sn (article-id-from-url url))))
+         (article (get-article (article-id-from-url url))))
     (or (and article (article-title article)) (website-title url))))
 
 (defun display-site-p (uinfo articleid)

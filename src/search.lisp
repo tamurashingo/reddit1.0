@@ -51,7 +51,7 @@
 (defun search-sites (str &optional (limit 25) (offset 0))
   (when (> (length str) 0)
     (let ((q (format nil "to_tsquery('default', ~a)" (sql (to-search-str str)))))
-      (select 'article-with-sn
+      (select 'article-with
               :where (sql-expression :string (format nil "idxfti @@ ~a" q))
               :order-by `((,(sql-expression :string (format nil "rank(idxfti, ~a)" q)) desc)
                           (,[articles_sn date] desc))

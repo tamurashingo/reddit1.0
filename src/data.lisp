@@ -176,12 +176,6 @@
         (t (add-user-sql name email pass ip))))
 
 ;;--------------------------- article --------------------------
-(defun get-article-sn (id-or-url)
-  (when id-or-url
-    (typecase id-or-url
-      (integer (car (select 'article-with-sn :where [= id-or-url [id]] :flatp t)))
-      (string (car (select 'article-with-sn :where [= id-or-url [url]] :flatp t))))))
-
 (defun get-article (id-or-url)
   (when id-or-url
     (typecase id-or-url

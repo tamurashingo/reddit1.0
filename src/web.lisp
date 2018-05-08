@@ -61,7 +61,6 @@
                 :change-password
                 :fake-user-p
                 :get-article
-                :get-article-sn
                 :insert-article
                 :like-and-mod
                 :login-from-email
@@ -127,8 +126,8 @@
                 :article-id
                 :article-date
                 :article-pop
-                :article-sn
                 :article-submitterid
+                :article-submitter
                 :article-title
                 :article-url
                 :options
@@ -536,8 +535,9 @@
                         (pop article-pop)
                         (date article-date)
                         (subid article-submitterid)
-                        (sn article-sn)) article
-         (let* ((info (info))
+                        (subuser article-submitter)) article
+         (let* ((sn (user-name subuser))
+                (info (info))
                 (clicked (and info (user-clicked info id)))
                 (mod (and info (user-liked info id)))
                 (closed (and info (user-closed info id)))
@@ -729,7 +729,7 @@
           :onsubmit "return chksub()" :action (script-name*) :method "post" :class "meat"
           (:input :type "hidden" :name "action" :value "submit")
           (:input :type "hidden" :name "id" :value id)
-          (let ((article (get-article-sn id)))
+          (let ((article (get-article id)))
             (cond
               ;;invalid id
               ((and id (not article))
