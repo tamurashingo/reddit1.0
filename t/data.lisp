@@ -199,7 +199,11 @@
     (is (reddit.view-defs:article-url article)
         "http://sample.com/get-article.html")
     (is (reddit.view-defs:article-title article)
-        "get-article-test"))
+        "get-article-test")
+    (is-type (reddit.view-defs:article-submitter article)
+             'reddit.view-defs:user)
+    (is (reddit.view-defs:user-name (reddit.view-defs:article-submitter article))
+        "article-user"))
 
   (diag "get-article by url")
   (let ((article (get-article "http://sample.com/get-article.html")))
@@ -207,11 +211,11 @@
     (is (reddit.view-defs:article-url article)
         "http://sample.com/get-article.html")
     (is (reddit.view-defs:article-title article)
-        "get-article-test")))
-
-
-
-
+        "get-article-test")
+    (is-type (reddit.view-defs:article-submitter article)
+             'reddit.view-defs:user)
+    (is (reddit.view-defs:user-name (reddit.view-defs:article-submitter article))
+        "article-user")))
 
 
 (finalize)
