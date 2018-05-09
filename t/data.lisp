@@ -188,7 +188,18 @@
         "http://sample.com/6.html")
     (is (reddit.view-defs:article-title article)
         "title-6")
-    (ok (< (reddit.view-defs:article-submitterid article) 0))))
+    (ok (< (reddit.view-defs:article-submitterid article) 0)))
+
+  (diag "exist same url")
+  (let ((article (insert-article "title-7" "http://sample.com/1.html" *article-user-id* "192.168.0.1")))
+    (is article nil))
+  (let ((article (insert-article "title-7" "https://sample.com/1.html" *article-user-id* "192.168.0.1")))
+    (is article nil))
+  (let ((article (insert-article "title-7" "http://www.sample.com/1.html" *article-user-id* "192.168.0.1")))
+    (is article nil))
+  (let ((article (insert-article "title-7" "https://www.sample.com/1.html" *article-user-id* "192.168.0.1")))
+    (is article nil)))
+
 
 ;; get-article
 (defparameter *article-id* (reddit.view-defs:article-id (insert-article "get-article-test" "http://sample.com/get-article.html" *article-user-id* "192.168.0.1")))
@@ -216,6 +227,9 @@
              'reddit.view-defs:user)
     (is (reddit.view-defs:user-name (reddit.view-defs:article-submitter article))
         "article-user")))
+
+
+
 
 
 (finalize)
