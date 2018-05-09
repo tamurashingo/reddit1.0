@@ -228,8 +228,12 @@
     (is (reddit.view-defs:user-name (reddit.view-defs:article-submitter article))
         "article-user")))
 
-
-
+;; remove-article
+(subtest "remove-article"
+  (diag "")
+  (remove-article *article-user-id* *article-id*)
+  (let ((article (get-article *article-id*)))
+    (is article nil)))
 
 
 (finalize)
