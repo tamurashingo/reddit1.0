@@ -279,7 +279,7 @@
     :initarg :userid
     :accessor neuter-userid)
    (ip
-    :type :string
+    :type string
     :initarg :ip
     :accessor neuter-ip))
   (:base-table neuter))

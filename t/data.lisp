@@ -230,10 +230,34 @@
 
 ;; remove-article
 (subtest "remove-article"
-  (diag "")
   (remove-article *article-user-id* *article-id*)
   (let ((article (get-article *article-id*)))
     (is article nil)))
+
+;; neuter
+(subtest "neuterd"
+  (let ((neutered-user-id (add-user "neutered-user" "neutered@sample.com" "password" "192.168.0.1")))
+
+    (insert-article "neutered-article" "http://sample.com/neutered-article.html" neutered-user-id "192.168.1.1")
+
+    (is (reddit.data::neuterd neutered-user-id) nil)
+    (is (reddit.data::neuterd "192.168.1.1") nil)
+
+    (diag "user-id")
+    (clsql:insert-records :into [neuter]
+                          :attributes '(userid)
+                          :values (list neutered-user-id))
+
+    (isnt (reddit.data::neuterd neutered-user-id) nil)
+
+    (clsql:delete-records :from [neuter])
+
+    (diag "ip-address")
+    (clsql:insert-records :into [neuter]
+                          :attributes '(ip)
+                          :values '("192.168.1.1"))
+
+    (isnt (reddit.data::neuterd "192.168.1.1") nil)))
 
 
 (finalize)
