@@ -241,21 +241,6 @@
 (defun profile-visible (userid)
   (options-visible (get-user-options userid)))
 
-;;---------------------------- sessions ------------------------------
-(defun session-uid (iden)
-  (car (select [userid] :from [sessions] :where [= iden [iden]] :flatp t )))    
-
-(defun remember-session-sql (id iden &optional ip)
-  "Erase an old session for this userid, and add a new one"
-  (ignore-errors
-    (insert-records :into [sessions]
-                    :av-pairs `(([userid] ,id) ([iden] ,iden) ([ip] ,ip) (date ,[current_date])))))
-
-(defun remove-old-sessions ()
-  (delete-records :from [sessions]
-                  :where [< [date] [- [current_date]
-                                      (sql-expression :string "interval '2 weeks'")]]))
-
 ;;----------------------------- mod-user -------------------------------
 (defun check-and-mod-user (userid articleid ip amount)
   (let ((article (get-article articleid)))
