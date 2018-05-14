@@ -74,7 +74,9 @@
            :valid-user-p
            :insert-article
            :get-article
-           :remove-article))
+           :remove-article
+           :get-user-options
+           :profile-visible))
 (in-package :reddit.data)
 
 

@@ -259,6 +259,45 @@
 
     (isnt (reddit.data::neuterd "192.168.1.1") nil)))
 
+;; options
+(subtest "options"
+  ;; delete all options records
+  (clsql:delete-records :from [options])
+
+  (diag "create new instance when no records")
+  (let ((option (get-user-options 1)))
+    (is-type option 'reddit.view-defs:options)
+    (is (slot-value option 'reddit.view-defs::userid) 1)
+    (is (slot-value option 'reddit.view-defs::numsites) 25)
+    (is (slot-value option 'reddit.view-defs::promoted) t)
+    (is (slot-value option 'reddit.view-defs::demoted) nil)
+    (is (slot-value option 'reddit.view-defs::visible) nil)
+    (is (slot-value option 'reddit.view-defs::frame) nil))
+
+  (clsql:insert-records :into [options]
+                        :attributes '(userid numsites promoted demoted visible frame)
+                        :values (list 2     ; userid
+                                      30    ; numsites
+                                      nil   ; promoted
+                                      t     ; demoted
+                                      t     ; visible
+                                      t     ; frame
+                                      ))
+
+  (diag "new instance from records")
+  (let ((option (get-user-options 2)))
+    (is-type option 'reddit.view-defs:options)
+    (is (slot-value option 'reddit.view-defs::userid) 2)
+    (is (slot-value option 'reddit.view-defs::numsites) 30)
+    (is (slot-value option 'reddit.view-defs::promoted) nil)
+    (is (slot-value option 'reddit.view-defs::demoted) t)
+    (is (slot-value option 'reddit.view-defs::visible) t)
+    (is (slot-value option 'reddit.view-defs::frame) t))
+
+  (diag "profile-visible")
+  (is (profile-visible 1) nil)
+  (is (profile-visible 2) t))
+
 
 (finalize)
 
