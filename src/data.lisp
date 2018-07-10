@@ -47,6 +47,7 @@
                 :article-id
                 :article-date
                 :article-submitterid
+                :click
                 :like
                 :like-date
                 :like-like
@@ -76,7 +77,8 @@
            :get-article
            :remove-article
            :get-user-options
-           :profile-visible))
+           :profile-visible
+           :view-link))
 (in-package :reddit.data)
 
 

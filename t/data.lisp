@@ -299,6 +299,29 @@
   (is (profile-visible 2) t))
 
 
+;; mod-user
+;; skip tests because internal use only
+
+;; mod-article
+;; skip tests because internal use only
+
+
+;; click on a link
+(subtest "view-link"
+  (let* ((user-id (add-user "click-user" "click-user@example.com" "password" "192.168.0.1"))
+         (article (insert-article "title" "http://www.yahoo.co.jp/news.html" user-id "192.168.0.1")))
+
+    ;; no-click
+    (is (reddit.data::user-clicked-p user-id (reddit.view-defs:article-id article)) nil)
+    ;; click 1
+    (view-link user-id (reddit.view-defs:article-id article) "192.168.0.1")
+    (is (reddit.data::user-clicked-p user-id (reddit.view-defs:article-id article)) t)
+    ;; click 2
+    (view-link user-id (reddit.view-defs:article-id article) "192.168.0.1")
+    (is (reddit.data::user-clicked-p user-id (reddit.view-defs:article-id article)) t)))
+
+
+
 (finalize)
 
 (clsql:locally-disable-sql-reader-syntax)
