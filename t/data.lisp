@@ -321,6 +321,20 @@
     (is (reddit.data::user-clicked-p user-id (reddit.view-defs:article-id article)) t)))
 
 
+;; like-site
+(subtest "like-site"
+  (let* ((user-id (add-user "like-user" "like-user@example.com" "password" "192.168.0.1"))
+         (article (insert-article "like-user-article" "http://www.yahoo.co.jp/like-site.html" user-id "192.168.0.1"))
+         (article-id (reddit.view-defs:article-id article)))
+    ;; check get-like-site returns a record
+    (is (reddit.view-defs::like-like (reddit.data::get-like-site user-id article-id)) t)
+
+    ;; unlike-site
+    (reddit.data::unlike-site user-id article-id)
+
+    ;; check get-like-site returns no record
+    (is (reddit.data::get-like-site user-id article-id) nil)))
+
 
 (finalize)
 
