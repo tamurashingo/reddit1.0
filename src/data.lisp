@@ -443,7 +443,7 @@
               :limit num)))
 
   
-0(defun valid-email (userid ip dest)
+(defun valid-email (userid ip dest)
   (and userid ip dest
        (< (car (select [count [userid]] :from [emails]
                        :where [and [or [= userid [userid]]
