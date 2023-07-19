@@ -1,89 +1,66 @@
 # Reddit 1.0
 
-This version is an easier version to develop using docker.
-
-
-## for Development
 
 ## Require
 
-- Docker Compose
-
-### Run
-
-Run docker.
-
-```sh
-docker-compose up
-```
-
-Connect Swank, for example from emacs.
-
-```sh
-M-x slime-connect localhost 4005
-```
+- CommonLisp (tested on SBCL)
+- PostgreSQL
+- memcached
+- smtp server
 
 
-### setting
+## Database
 
-```lisp
-;; add reddit project directory to quicklisp project directory
-(push #P"/reddit/" ql:*local-project-directories*)
-
-;; load reddit
-(ql:quickload :reddit)
-
-;; connect database
-(reddit.main::connect-database)
-
-;; migrate database
-(ql:quickload :reddit-db)
-
-;; disconnect database
-(reddit.main::disconnect-database)
-```
-
-### start
-
-```lisp
-(reddit:startup-reddit)
-```
-
-open http://localhost:8000/
-
-
-### stop
-
-```lisp
-(reddit:shutdown-reddit)
-```
-
-## hint
-
-### databsae
+### PostgreSQL
 
 - database-name: `reddit`
-- database-server: `db`
 - username: `pgsql`
 - password: `pgcwip42:`
 
 it's defined on src/data.lisp.
 
-### routing
 
-it's defined on src/main.lisp at `initialize-dispatch-table`.
+### Migration
 
+load `reddit-db` like 
 
-## for Production ...?
+```lisp
+(ql:quickload :reddit-db)
+```
 
-(help...)
+#### Log
 
+on PostgreSQL, there's no tables.
 
-## notes
+```
+$ psql -U pgsql -W reddit
+Password for user pgsql:
+psql (10.1)
+Type "help" for help.
 
-Tables
+reddit=> \d
+Did not find any relations.
+```
 
-```sql
+load `reddit-db` and migrate.
+
+```
+CL-USER> (ql:quickload :reddit-db)
+To load "reddit-db":
+  Load 1 ASDF system:
+    reddit-db
+; Loading "reddit-db"
+..................................................
+[package reddit.view-defs]........................
+[package reddit.util].............................
+[package reddit.data].............................
+[package reddit.db.migration].
+(:REDDIT-DB)
+```
+
+check PostgreSQL.
+
+```
 reddit=> \d
           List of relations
  Schema |    Name     | Type  | Owner
@@ -229,6 +206,45 @@ Indexes:
 ```
 
 
+## Application Server
+
+### Load
+
+```
+CL-USER> (ql:quickload :reddit)
+To load "reddit":
+  Load 1 ASDF system:
+    reddit
+; Loading "reddit"
+..................................................
+[package reddit.user-info]........................
+[package reddit.frame]............................
+[package reddit.sites]............................
+[package reddit.rss]..............................
+[package reddit.cookiehash].......................
+[package reddit.mail].............................
+[package reddit.recommend]........................
+[package reddit.web]..............................
+..................................................
+[package reddit.user-panel].......................
+[package reddit.main].............................
+[package reddit]
+(:REDDIT)
+```
+
+### Start
+
+```
+CL-USER> (reddit:startup-reddit)
+#<HUNCHENTOOT:EASY-ACCEPTOR (host *, port 8000)>
+```
+
+### Stop
+
+```
+CL-USER> (reddit:shutdown-reddit)
+T
+```
+
 ---
-- original Copyright 2018 Reddit, Inc.
-- refactored Copyright 2018, 2023 tamura shingo
+Copyright 2018 Reddit, Inc.
