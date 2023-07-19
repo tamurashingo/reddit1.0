@@ -70,7 +70,7 @@
 (defvar *database-type* :postgresql)
 (defvar *database-name* "reddit")
 (defvar *database-user* "pgsql")
-(defvar *database-server* "")
+(defvar *database-server* "db")
 (defvar *database-password* "pgcwip42:")
 
 (defparameter *conn-spec* `(,*database-server* ,*database-name* ,*database-user* ,*database-password*))

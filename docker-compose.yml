@@ -1,0 +1,19 @@
+version: '3'
+services:
+  db:
+    image: postgres:10.21-alpine3.16
+    environment:
+      POSTGRES_USER: pgsql
+      POSTGRES_PASSWORD: "pgcwip42:"
+    ports:
+      - '5432:5432'
+  reddit:
+    build: .
+    volumes:
+      - .:/reddit
+    ports:
+      - "8000:8000"
+      - "4005:4005"
+    depends_on:
+      - db
+    tty: true
