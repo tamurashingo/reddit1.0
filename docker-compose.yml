@@ -7,6 +7,9 @@ services:
       POSTGRES_PASSWORD: "pgcwip42:"
     ports:
       - '5432:5432'
+    volumes:
+      - ./tmp/db:/var/lib/postgresql/data
+      - ./script:/docker-entrypoint-initdb.d
   reddit:
     build: .
     volumes:
