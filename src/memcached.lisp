@@ -44,7 +44,7 @@
               (mc-set ,k val ,exp)
               val)))))
 
-(defvar *memcached* (cl-memcached:make-memcache :ip "127.0.0.1" :port 11211 :name "reddit memcached"))
+(defvar *memcached* (cl-memcached:make-memcache :ip "memcached" :port 11211 :name "reddit memcached"))
 
 (defun mc-get (key)
   (cl-memcached:mc-get-value key :memcache *memcached*))
