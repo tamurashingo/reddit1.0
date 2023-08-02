@@ -10,6 +10,10 @@ services:
     volumes:
       - ./tmp/db:/var/lib/postgresql/data
       - ./script:/docker-entrypoint-initdb.d
+  memcached:
+    image: memcached:1.6.21-alpine3.18
+    ports:
+      - "11211:11211"
   reddit:
     build: .
     volumes:
