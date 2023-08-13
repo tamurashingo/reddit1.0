@@ -14,6 +14,11 @@ services:
     image: memcached:1.6.21-alpine3.18
     ports:
       - "11211:11211"
+  mailserver:
+    image: mailhog/mailhog
+    ports:
+    - "1025:1025"
+    - "8025:8025"
   reddit:
     build: .
     volumes:
