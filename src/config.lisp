@@ -35,7 +35,8 @@
                 :port 11211)
     :mail (:server "mailserver"
            :username "username"
-           :password "password")
+           :password "password"
+           :port 1025)
     :logger (:logger-name "reddit-logger-stdout")))
 
 (defvar *development*
@@ -50,7 +51,8 @@
                 :port 11211)
     :mail (:server "127.0.0.1"
            :username "username"
-           :password "password")
+           :password "password"
+           :port 25)
     :logger (:logger-name "reddit-logger-stdout")))
 
 

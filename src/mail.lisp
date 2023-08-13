@@ -25,22 +25,27 @@
                 :send-email)
   (:import-from :clsql
                 :select)
+  (:import-from :reddit.config
+                :mail-server
+                :mail-port
+                :mail-username
+                :mail-password)
   (:import-from :reddit.data
                 :email-sent
                 :valid-email))
 (in-package :reddit.mail)
 
-(defparameter *mail-prog* "/usr/bin/mail")
+;(defparameter *mail-prog* "/usr/bin/mail")
 
-(defparameter *user* "ZG1haWw=")
-(defparameter *pass* "Ymxhcmc=")
-(defparameter *mail-server* "216.55.162.13")
+;(defparameter *user* "ZG1haWw=")
+;(defparameter *pass* "Ymxhcmc=")
+;(defparameter *mail-server* "216.55.162.13")
 
 (defun send-reddit-email (to from subject message)
   (bt:make-thread
    #'(lambda ()
        (ignore-errors
-         (send-email *mail-server* from to subject message :authentication '(*user* *pass*))))))
+         (send-email (mail-server) from to subject message :port (mail-port) :authentication `(,(mail-username) ,(mail-password)))))))
 
 (defun info-email-body (user password)
   (with-output-to-string (s)

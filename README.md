@@ -76,6 +76,25 @@ it's defined on src/data.lisp.
 
 it's defined on src/main.lisp at `initialize-dispatch-table`.
 
+### mail server
+
+To read email, open 'http://localhost:8025' .
+
+- username: username
+- password: password
+
+
+To regenerate password, run this
+
+```sh
+docker-compse run mailserver bcrypt password
+```
+
+and read it.
+
+https://github.com/mailhog/MailHog/blob/master/docs/Auth.md
+
+
 
 ## for Production ...?
 
