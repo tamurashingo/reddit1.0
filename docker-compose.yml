@@ -9,11 +9,20 @@ services:
       - '5432:5432'
     volumes:
       - ./tmp/db:/var/lib/postgresql/data
-      - ./script:/docker-entrypoint-initdb.d
+      - ./script/db:/docker-entrypoint-initdb.d
   memcached:
     image: memcached:1.6.21-alpine3.18
     ports:
       - "11211:11211"
+  mailserver:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    environment:
+      MH_AUTH_FILE: /auth/auth.txt
+    volumes:
+      - ./script/mailserver:/auth
   reddit:
     build: .
     volumes:
