@@ -46,6 +46,9 @@ M-x slime-connect localhost 4005
 ### start
 
 ```lisp
+;; set configuration
+(reddit.config:set-docker-config)
+;; run
 (reddit:startup-reddit)
 ```
 

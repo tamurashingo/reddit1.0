@@ -20,8 +20,9 @@
                :cl-memcached)
   :components ((:module "src"
                 :components
-                ((:file "packages" :depends-on ("main"))
-                 (:file "main" :depends-on ("frame" "rss" "user-panel" "web"))
+                ((:file "config")
+                 (:file "packages" :depends-on ("main"))
+                 (:file "main" :depends-on ("frame" "rss" "user-panel" "web" "memcached" "conditions"))
                  (:file "cookiehash" :depends-on ("data" "view-defs" "util"))
                  (:file "recommend" :depends-on ("user-info"))
                  (:file "frame" :depends-on ("data" "user-info" "util" "view-defs"))
@@ -39,4 +40,5 @@
                  (:file "sites" :depends-on ("autocompute" "data" "search" "user-info" "util" "view-defs"))
                  (:file "mail" :depends-on ("data"))
                  (:file "user-panel" :depends-on ("data" "sites" "user-info" "util" "view-defs" "web"))
-                 (:file "logging")))))
+                 (:file "logging")
+                 (:file "conditions")))))

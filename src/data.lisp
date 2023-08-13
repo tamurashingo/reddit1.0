@@ -39,6 +39,9 @@
                 :update-records-from-instance)
   (:import-from :hunchentoot
                 :log-message*)
+  (:import-from :reddit.config
+                :database-connection-string
+                :database-type-name)
   (:import-from :reddit.view-defs
                 :alias-name
                 :alias-val
@@ -67,16 +70,17 @@
 (defparameter *min-mod-karma* 0)
 (defparameter *min-karma* 10)
 
-(defvar *database-type* :postgresql)
-(defvar *database-name* "reddit")
-(defvar *database-user* "pgsql")
-(defvar *database-server* "db")
-(defvar *database-password* "pgcwip42:")
+;(defvar *database-type* :postgresql)
+;(defvar *database-name* "reddit")
+;(defvar *database-user* "pgsql")
+;(defvar *database-server* "db")
+;(defvar *database-password* "pgcwip42:")
+;(defvar *database-port* 5432)
 
-(defparameter *conn-spec* `(,*database-server* ,*database-name* ,*database-user* ,*database-password*))
+;(defparameter *conn-spec* `(,*database-server* ,*database-name* ,*database-user* ,*database-password*))
 
 (defmacro with-web-db (&body body)
-  `(clsql:with-database (clsql:*default-database* *conn-spec* :pool t :database-type *database-type*)
+  `(clsql:with-database (clsql:*default-database* (database-connection-string) :pool t :database-type (database-type-name))
      ,@body))
 
 ;(connect *conn-spec* :database-type *database-type* :if-exists :old)
