@@ -18,7 +18,11 @@
 ;;;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ;;;; SOFTWARE.
 
-(in-package #:reddit)
+(in-package :cl-user)
+(defpackage reddit.conditions
+  (:use :cl))
+
+(in-package :reddit.conditions)
 
 (define-condition invalid-user ()
   ((username :initarg :username :reader username)
@@ -46,4 +50,6 @@
 (define-condition password-changed ()
   nil)
 
+(define-condition configuration-not-set ()
+  nil)
 

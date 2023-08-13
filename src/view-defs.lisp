@@ -97,6 +97,9 @@
    (screenname
     :type string
     :reader user-name)
+   (password
+    :type string
+    :reader password)
    (email
     :type string
     :accessor user-emai)

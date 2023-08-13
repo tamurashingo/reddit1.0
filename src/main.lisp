@@ -13,9 +13,9 @@
                 :easy-acceptor
                 :start
                 :stop)
-  (:import-from :reddit.data
-                :*conn-spec*
-                :*database-type*)
+  (:import-from :reddit.config
+                :database-connection-string
+                :database-type-name)
   (:import-from :reddit.frame
                 :reddit-toolbar)
   (:import-from :reddit.rss
@@ -44,7 +44,9 @@
                 :page-lucky
                 :default-handler
                 :page-blog
-                :page-help))
+                :page-help)
+  (:import-from :reddit.conditions
+                :configuration-not-set))
 (in-package :reddit.main)
 
 
@@ -53,6 +55,7 @@
 
 (defun initialize-once ()
   (when *not-initialized*
+    (reddit.memcached:initialize)
     (initialize-acceptor)
     (initialize-dispatch-table)
     (setf *not-initialized* nil)))
@@ -100,11 +103,14 @@
                    ("/help/?" page-help))))))
 
 (defun connect-database ()
-  (clsql:connect *conn-spec* :database-type *database-type* :if-exists :old))
+  (clsql:connect (database-connection-string) :database-type (database-type-name) :if-exists :old))
 (defun disconnect-database ()
   (clsql:disconnect))
 
 (defun startup-reddit ()
+  (when (or (not (boundp 'reddit.config::*default-config*))
+            (null reddit.config::*default-config*))
+    (error (make-condition 'configuration-not-set)))
   (initialize-once)
   (connect-database)
   (create-cache)

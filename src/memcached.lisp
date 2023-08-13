@@ -21,7 +21,11 @@
 (in-package :cl-user)
 (defpackage reddit.memcached
   (:use :cl)
-  (:export :cached))
+  (:import-from :reddit.config
+                :memcached-server
+                :memcached-port)
+  (:export :initialize
+           :cached))
 (in-package :reddit.memcached)
 
 (defparameter *STORED* "STORED")
@@ -44,7 +48,10 @@
               (mc-set ,k val ,exp)
               val)))))
 
-(defvar *memcached* (cl-memcached:make-memcache :ip "memcached" :port 11211 :name "reddit memcached"))
+(defvar *memcached*)
+
+(defun initialize ()
+  (setf *memcached* (cl-memcached:make-memcache :ip (memcached-server) :port (memcached-port) :name "reddit memcached")))
 
 (defun mc-get (key)
   (cl-memcached:mc-get-value key :memcache *memcached*))
