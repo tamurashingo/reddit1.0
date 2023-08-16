@@ -1,0 +1,28 @@
+name: test
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        lisp:
+          - sbcl-bin
+
+    env:
+      LISP: ${{ matrix.lisp }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: niden/actions-memcached@v7
+      - uses: 40ants/setup-lisp@v2
+        with:
+          asdf-system: reddit-test
+      - uses: 40ants/run-tests@v2
+        with:
+          asdf-system: reddit-test
