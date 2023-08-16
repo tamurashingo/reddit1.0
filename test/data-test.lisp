@@ -17,9 +17,10 @@
                                          :port "5432"
                                          :username "pgsql"
                                          :password "pgcwip42:")))
-  (reddit.main::connect-database))
+  (reddit.main::connect-database)
+  (reddit.db.migration:migrate))
 
 
 (teardown
-  (reddit.main::distonnect-database)
+  (reddit.main::disconnect-database)
   (format T "ok"))
