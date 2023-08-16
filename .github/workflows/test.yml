@@ -16,7 +16,7 @@ jobs:
           POSTGRES_PASSWORD: "pgcwip42:"
           POSTGRES_DB: reddit_test
         options: >-
-          --health-cmd pg-isready
+          --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
