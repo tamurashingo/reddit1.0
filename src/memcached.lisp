@@ -43,9 +43,9 @@
 (defmacro cached ((key &optional (exp 0)) &body body) 
   (let ((k (gensym)))
     `(let ((,k ,key))
-        (or (mc-get ,k)
+        (or (reddit.memcached::mc-get ,k)
             (let ((val (progn ,@body)))
-              (mc-set ,k val ,exp)
+              (reddit.memcached::mc-set ,k val ,exp)
               val)))))
 
 (defvar *memcached*)
@@ -54,7 +54,11 @@
   (setf *memcached* (cl-memcached:make-memcache :ip (memcached-server) :port (memcached-port) :name "reddit memcached")))
 
 (defun mc-get (key)
-  (cl-memcached:mc-get-value key :memcache *memcached*))
+  (let ((c (cl-memcached:mc-get-value key :memcache *memcached*)))
+    (if (null c)
+        c
+        (with-input-from-string (in c)
+          (read in)))))
 
 (defun mc-set (key val &optional (exp 0))
   (let* ((val-str (with-output-to-string (s) (prin1 val s)))
