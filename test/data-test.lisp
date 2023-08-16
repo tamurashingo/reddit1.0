@@ -28,7 +28,7 @@
 (deftest reigster-user-and-check
   (testing "register user"
     ;; prepare
-    (add-user "tamu" "tamu@example.com" "password" "127.0.0.1")
+    (reddit.data::add-user "tamu" "tamu@example.com" "password" "127.0.0.1")
 
     ;; validate
-    (ok (valid-login-p "tamu" "password"))))
+    (ok (reddit.data::valid-login-p "tamu" "password"))))
