@@ -11,6 +11,9 @@
 (in-package :reddit-test/memcached)
 
 (setup
+  (reddit.config:set-config '(:environment "test"
+                              :memcached (:server "localhost"
+                                          :port 11211)))
   (initialize))
 
 (teardown
