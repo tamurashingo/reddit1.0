@@ -8,6 +8,18 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:10.21-alpine3.16
+        env:
+          POSTGRES_USER: pgsql
+          POSTGRES_PASSWORD: "pgcwip42:"
+          POSTGRES_DB: reddit_test
+        options: >-
+          --health-cmd pg-isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     strategy:
       matrix:

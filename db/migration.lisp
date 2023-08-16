@@ -16,18 +16,21 @@
                 :modarticle
                 :neuter
                 :options
-                :alias))
+                :alias)
+  (:export :migrate))
 (in-package :reddit.db.migration)
 
-(clsql:create-view-from-class 'user)
-(clsql:create-view-from-class 'article)
-(clsql:create-view-from-class 'article-with-sn)
-(clsql:create-view-from-class 'wtf)
-(clsql:create-view-from-class 'click)
-(clsql:create-view-from-class 'like)
-(clsql:create-view-from-class 'moduser)
-(clsql:create-view-from-class 'modarticle)
-(clsql:create-view-from-class 'neuter)
-(clsql:create-view-from-class 'options)
-(clsql:create-view-from-class 'alias)
+(defun migrate ()
+  (clsql:create-view-from-class 'user)
+  (clsql:create-view-from-class 'article)
+  (clsql:create-view-from-class 'article-with-sn)
+  (clsql:create-view-from-class 'wtf)
+  (clsql:create-view-from-class 'click)
+  (clsql:create-view-from-class 'like)
+  (clsql:create-view-from-class 'moduser)
+  (clsql:create-view-from-class 'modarticle)
+  (clsql:create-view-from-class 'neuter)
+  (clsql:create-view-from-class 'options)
+  (clsql:create-view-from-class 'alias))
+
 

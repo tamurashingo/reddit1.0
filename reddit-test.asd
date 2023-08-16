@@ -8,9 +8,11 @@
 ;;;;
 (defsystem reddit-test
   :depends-on (:reddit
+               :reddit-db
                :rove)
   :pathname "test"
   :components ((:file "config-test")
-               (:file "memcached-test"))
+               (:file "memcached-test")
+               (:file "data-test"))
   :perform (test-op (o c)
                     (uiop:symbol-call :rove :run c)))
