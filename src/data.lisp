@@ -46,7 +46,11 @@
   (:import-from :reddit.util
                 :add-http
                 :base-url
-                :when-bind))
+                :when-bind)
+  (:export :add-user
+           :fake-user-p
+           :valid-login-p
+           :valid-user-p))
 (in-package :reddit.data)
 
 
