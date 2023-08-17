@@ -31,6 +31,8 @@
   (clsql:create-view-from-class 'modarticle)
   (clsql:create-view-from-class 'neuter)
   (clsql:create-view-from-class 'options)
-  (clsql:create-view-from-class 'alias))
+  (clsql:create-view-from-class 'alias)
+  (clsql:create-sequence "userid")
+  (clsql:create-sequence "articleid"))
 
 
