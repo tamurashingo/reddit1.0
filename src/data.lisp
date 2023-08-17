@@ -20,23 +20,8 @@
 
 (in-package :cl-user)
 (defpackage :reddit.data
-  (:use :cl)
-  (:import-from :clsql
-                :*default-caching*
-                :connect
-                :delete-records
-                :delete-instance-records
-                :get-time
-                :insert-records
-                :locally-enable-sql-reader-syntax
-                :make-duration
-                :select
-                :sequence-next
-                :sql-expression
-                :time-
-                :time<
-                :update-records
-                :update-records-from-instance)
+  (:use :cl
+        :clsql)
   (:import-from :hunchentoot
                 :log-message*)
   (:import-from :reddit.config
