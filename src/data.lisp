@@ -76,7 +76,7 @@
 
 (setf *default-caching* nil)
 
-(locally-enable-sql-reader-syntax)
+#.(locally-enable-sql-reader-syntax)
 
 (defmacro when-valid ((&key userid articleid targetid ip) &body body)
   `(and (or (not ,userid) (and (get-user ,userid)
@@ -93,8 +93,8 @@
 
 (defun get-user (name-or-id)
   (typecase name-or-id
-    (string (car (select 'user :where [= (string-downcase name-or-id) [lower [screenname]]] :flatp t )))
-    (integer (car (select 'user :where [= name-or-id [id]] :flatp t )))))
+    (string (car (select 'reddit.view-defs:user :where [= (string-downcase name-or-id) [lower [screenname]]] :flatp t )))
+    (integer (car (select 'reddit.view-defs:user :where [= name-or-id [id]] :flatp t )))))
 
 (defun valid-login-p (sn pass)
   "Returns user id if the user's password is correct and NIL otherwise"
@@ -464,3 +464,5 @@
                 (select [*] :from [closed_sites] :where [= [userid] userid])
                 (select [*] :from [saved_sites] :where [= [userid] userid])
                 (select [*] :from [clicks] :where [= [userid] userid]))))
+
+#.(restore-sql-reader-syntax-state)
