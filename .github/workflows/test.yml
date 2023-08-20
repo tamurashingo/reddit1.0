@@ -29,27 +29,19 @@ jobs:
           - sbcl-bin
           - ccl-bin
 
-    env:
-      LISP: ${{ matrix.lisp }}
-
     steps:
       - uses: actions/checkout@v3
       - uses: niden/actions-memcached@v7
-      - uses: 40ants/setup-lisp@v2
-        with:
-          asdf-system: reddit
-      - uses: 40ants/run-tests@v2
-        with:
-          asdf-system: reddit
-          run-tests: |
-            (ql:quickload :reddit)
-            (ql:quickload :reddit-db)
-            (ql:quickload :reddit-test)
-            (format T "pkg:~A" (list-all-packages))
-            (in-package :reddit.main)
-            (format T "current:~A" *package*)
-            (do-symbols (s *package*)
-              (print s))
-            (reddit.main::connect-database)
+      - name: Install roswell
+        env:
+          LISP: ${{ matrix.lisp }}
+        run: |
+          curl -L https://raw.githubusercontent.com/roswell/roswell/v22.12.14.113/scripts/install-for-ci.sh | sh
+
+      - name: Run test
+        run: |
+          ros install fukamachi/rove
+          export PATH=$HOME/.roswell/bin:$PATH
+          rove reddit-test.asd
         env:
           CL_SOURCE_REGISTRY: ${{ github.workspace }}
