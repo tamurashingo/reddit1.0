@@ -49,5 +49,6 @@ jobs:
             (format T "current:~A" *package*)
             (do-symbols (s *package*)
               (print s))
+            (reddit.main::connect-database)
         env:
           CL_SOURCE_REGISTRY: ${{ github.workspace }}
