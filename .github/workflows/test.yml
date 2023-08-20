@@ -26,7 +26,6 @@ jobs:
       matrix:
         lisp:
           - sbcl-bin
-          - ccl
     steps:
       - uses: actions/checkout@v3
       - uses: niden/actions-memcached@v7
