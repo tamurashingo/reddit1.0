@@ -6,11 +6,11 @@ on:
       - '**'
 
 jobs:
-  tests:
+  setup:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:10.21-alpine3.16
+        image: postgres:10.21-alpines3.16
         env:
           POSTGRES_USER: pgsql
           POSTGRES_PASSWORD: "pgcwip42:"
@@ -22,26 +22,46 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
+    steps:
+      - uses: actions/checkout@v3
+      - uses: niden/actions-memcached@v7
+  setup-roswell:
+    needs: setup
+    steps:
+      - name: Install roswell
+        run: |
+          curl -L https://raw.githubusercontent.com/roswell/roswell/v22.12.14.113/scripts/install-for-ci.sh | sh
+          ros install fukamachi/rove
+          export PATH=$HOME/.roswell/bin:$PATH
 
+  build:
+    needs: setup, setup-roswell
+    strategy:
+      matrix:
+        LISP:
+          - sbcl-bin
+          - ccl-bin
+    steps:
+      - name: build
+        run: |
+          ros install ${{ matrix.lisp }}
+          ros use ${{ matrix.lisp }}
+          ros run -e '(ql:quickload :reddit)' -e '(ql:quickload :reddit-db)'
+        env:
+          CL_SOURCE_REGISTRY: ${{ github.workspace }}
+          LISP: ${{ matrix.lisp }}
+
+  tests:
+    needs: setup, setup-roswell, build
     strategy:
       matrix:
         lisp:
           - sbcl-bin
           - ccl-bin
-
     steps:
-      - uses: actions/checkout@v3
-      - uses: niden/actions-memcached@v7
-      - name: Install roswell
-        env:
-          LISP: ${{ matrix.lisp }}
-        run: |
-          curl -L https://raw.githubusercontent.com/roswell/roswell/v22.12.14.113/scripts/install-for-ci.sh | sh
-
       - name: Run test
         run: |
-          ros install fukamachi/rove
-          export PATH=$HOME/.roswell/bin:$PATH
+          ros use ${{ matrix.lisp }}
           rove reddit-test.asd
         env:
           CL_SOURCE_REGISTRY: ${{ github.workspace }}
