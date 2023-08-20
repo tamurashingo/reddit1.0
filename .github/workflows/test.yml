@@ -46,6 +46,7 @@ jobs:
     steps:
       - name: build
         run: |
+          export PATH=$HOME/.roswell/bin:$PATH
           ros install ${{ matrix.lisp }}
           ros use ${{ matrix.lisp }}
           ros run -e '(ql:quickload :reddit)' -e '(ql:quickload :reddit-db)'
@@ -64,6 +65,7 @@ jobs:
     steps:
       - name: Run test
         run: |
+          export PATH=$HOME/.roswell/bin:$PATH
           ros use ${{ matrix.lisp }}
           rove reddit-test.asd
         env:
