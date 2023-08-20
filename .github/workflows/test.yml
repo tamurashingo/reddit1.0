@@ -41,8 +41,6 @@ jobs:
         with:
           asdf-system: reddit-test
           run-tests: |
-            (ql:quickload :reddit)
-            (ql:quickload :reddit-db)
             (reddit.config:set-config '(:environment "github action test"
                                         :database (:type postgresql
                                                    :database "reddit_test"
