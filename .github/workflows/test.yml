@@ -54,6 +54,7 @@ jobs:
           LISP: ${{ matrix.lisp }}
 
   tests:
+    runs-on: ubuntu-latest
     needs: setup, setup-roswell, build
     strategy:
       matrix:
