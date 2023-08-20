@@ -46,6 +46,7 @@ jobs:
           CL_SOURCE_REGISTRY: ${{ github.workspace }}
       - name: Run test
         run: |
+          export PATH=$HOME/.roswell/bin:$PATH
           ros use ${{ matrix.lisp }}
           rove reddit-test.asd
         env:
