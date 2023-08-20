@@ -47,5 +47,7 @@ jobs:
             (format T "pkg:~A" (list-all-packages))
             (in-package :reddit.main)
             (format T "current:~A" *package*)
+            (do-symbols (s *package*)
+              (print s))
         env:
           CL_SOURCE_REGISTRY: ${{ github.workspace }}
