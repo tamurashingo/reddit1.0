@@ -41,6 +41,9 @@ jobs:
         with:
           asdf-system: reddit-test
           run-tests: |
+            (ql:quickload :reddit)
+            (ql:quickload :reddit-db)
+            (ql:quickload :reddit-test)
             (format T "pkg:~A" (list-all-packages))
         env:
           CL_SOURCE_REGISTRY: ${{ github.workspace }}
