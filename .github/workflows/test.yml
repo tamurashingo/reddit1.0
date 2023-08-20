@@ -37,7 +37,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    needs: setup, setup-roswell
+    needs: setup-roswell
     strategy:
       matrix:
         LISP:
@@ -55,7 +55,7 @@ jobs:
 
   tests:
     runs-on: ubuntu-latest
-    needs: setup, setup-roswell, build
+    needs: build
     strategy:
       matrix:
         lisp:
