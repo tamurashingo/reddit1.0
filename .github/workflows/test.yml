@@ -45,6 +45,7 @@ jobs:
             (ql:quickload :reddit-db)
             (ql:quickload :reddit-test)
             (format T "pkg:~A" (list-all-packages))
-            (reddit.main::connect-database)
+            (in-package :reddit.main)
+            (format T "current:~A" *package*)
         env:
           CL_SOURCE_REGISTRY: ${{ github.workspace }}
