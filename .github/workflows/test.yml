@@ -41,6 +41,6 @@ jobs:
         with:
           asdf-system: reddit-test
           run-tests: |
-            (list-all-packages)
+            (format T "pkg:~A" (list-all-packages))
         env:
           CL_SOURCE_REGISTRY: ${{ github.workspace }}
