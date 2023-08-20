@@ -41,19 +41,7 @@ jobs:
         with:
           asdf-system: reddit-test
           run-tests: |
-            (reddit.config:set-config '(:environment "github action test"
-                                        :database (:type postgresql
-                                                   :database "reddit_test"
-                                                   :server "127.0.0.1"
-                                                   :port "5432"
-                                                   :username "pgsql"
-                                                   :password "pgcwip42:")
-                                        :memcached (:server "127.0.0.1"
-                                                    :port 11211)))
-            (reddit.main::connect-database)
-            (reddit.db.migration:migrate)
-            (ql:quickload :reddit-test)
-
+            (list-all-packages)
             (unless (rove:run :reddit-test)
               (error "Tests failed"))
         env:
