@@ -11,6 +11,7 @@
            :environment-name
            :database-connection-string
            :database-type-name
+           :database-username
            :memcached-server
            :memcached-port
            :mail-server
@@ -23,7 +24,8 @@
 
 (defvar *default-config*)
 
-(defvar *docker*
+
+(defparameter *docker*
   '(:environment "docker"
     :database (:type :postgresql
                :database "reddit"
@@ -37,9 +39,9 @@
            :username "username"
            :password "password"
            :port 1025)
-    :logger (:logger-name "reddit-logger-stdout")))
+    :logger (:logger-name "stdout")))
 
-(defvar *development*
+(defparameter *development*
   '(:environment "development"
     :database (:type :postgresql
                :database "reddit"
@@ -53,7 +55,7 @@
            :username "username"
            :password "password"
            :port 25)
-    :logger (:logger-name "reddit-logger-stdout")))
+    :logger (:logger-name "stdout")))
 
 
 (defun set-config (conf)
@@ -93,6 +95,10 @@
 (defun database-type-name ()
   (let ((database (getf *default-config* :database)))
     (getf database :type)))
+
+(defun database-username ()
+  (let ((database (getf *default-config* :database)))
+    (getf database :username)))
 
 (defun memcached-server ()
   (let ((memcached (getf *default-config* :memcached)))

@@ -15,7 +15,8 @@
                 :stop)
   (:import-from :reddit.config
                 :database-connection-string
-                :database-type-name)
+                :database-type-name
+                :logger-name)
   (:import-from :reddit.frame
                 :reddit-toolbar)
   (:import-from :reddit.rss
@@ -46,7 +47,9 @@
                 :page-blog
                 :page-help)
   (:import-from :reddit.conditions
-                :configuration-not-set))
+                :configuration-not-set)
+  (:import-from :reddit.logging
+                :initialize-logger))
 (in-package :reddit.main)
 
 
@@ -55,6 +58,7 @@
 
 (defun initialize-once ()
   (when *not-initialized*
+    (initialize-logger (logger-name))
     (reddit.memcached:initialize)
     (initialize-acceptor)
     (initialize-dispatch-table)

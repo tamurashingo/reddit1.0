@@ -15,4 +15,5 @@
                (:file "memcached-test")
                (:file "data-test"))
   :perform (test-op (o c)
+                    (uiop:symbol-call :reddit.config :set-docker-config)
                     (uiop:symbol-call :rove :run c)))

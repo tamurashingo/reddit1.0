@@ -10,18 +10,14 @@
 (in-package :reddit-test/data)
 
 (setup
-  (reddit.config:set-config '(:environment "test"
-                              :database (:type :postgresql
-                                         :database "reddit_test"
-                                         :server "127.0.0.1"
-                                         :port "5432"
-                                         :username "pgsql"
-                                         :password "pgcwip42:")))
   (reddit.main::connect-database)
-  (reddit.db.migration:migrate))
+  (reddit.logging:initialize-logger (reddit.config:logger-name))
+  (clsql:start-sql-recording :type :both)
+  (reddit.db.migration:rebuild))
 
 
 (teardown
+  (clsql:stop-sql-recording :type :both)
   (reddit.main::disconnect-database)
   (format T "ok"))
 
@@ -53,3 +49,20 @@
     (ok (valid-login-p "tamu3" "password3"))
     (ok (valid-user-p "tamu3"))
     (ng (fake-user-p "tamu3"))))
+
+
+(deftest article
+  (testing "article"
+    ;; prepare
+    (add-user "tamu-article-1" "tamu-article-1@example.com" "password1" "127.0.0.1")
+
+    ;; do
+    (insert-article "this is yahoo japan"
+                    "https://www.yahoo.co.jp"
+                    (valid-user-p "tamu-article-1")
+                    "127.0.0.1")
+
+    ;; validate
+    (ok (not (null (article-id-from-url "https://www.yahoo.co.jp"))))
+    (ok (not (null (get-article "https://www.yahoo.co.jp"))))))
+

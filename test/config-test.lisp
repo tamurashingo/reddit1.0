@@ -10,6 +10,15 @@
         :reddit.config))
 (in-package :reddit-test/config)
 
+(defvar *backup-config*)
+
+(setup
+  (setf *backup-config* reddit.config::*default-config*))
+
+(teardown
+  (setf reddit.config::*default-config* *backup-config*))
+
+
 (deftest set-default-config
   (testing "docker"
     (set-docker-config)
@@ -37,7 +46,8 @@
                      :port 1025
                      :username "username"
                      :password "password")
-              :logger (:logger-name "reddit-logger-stdout"))))
+              :logger (:logger-name "stdout"))))
+
       (set-config *test-config*)
 
       ;; check environment name
@@ -54,6 +64,6 @@
       (ok (string= (mail-username) "username"))
       (ok (string= (mail-password) "password"))
       ;; check logger
-      (ok (string= (logger-name) "reddit-logger-stdout")))))
+      (ok (string= (logger-name) "stdout")))))
 
 

@@ -22,8 +22,6 @@
 (defpackage :reddit.data
   (:use :cl
         :clsql)
-  (:import-from :hunchentoot
-                :log-message*)
   (:import-from :reddit.config
                 :database-connection-string
                 :database-type-name)
@@ -47,10 +45,14 @@
                 :add-http
                 :base-url
                 :when-bind)
+  (:import-from :reddit.logging
+                :log-message)
   (:export :add-user
            :fake-user-p
            :valid-login-p
-           :valid-user-p))
+           :valid-user-p
+           :get-article
+           :insert-article))
 (in-package :reddit.data)
 
 
@@ -155,14 +157,14 @@
 (defun get-article-sn (id-or-url)
   (when id-or-url
     (typecase id-or-url
-      (integer (car (select 'article-with-sn :where [= id-or-url [id]] :flatp t)))
-      (string (car (select 'article-with-sn :where [= id-or-url [url]] :flatp t))))))
+      (integer (car (select 'reddit.view-defs:article-with-sn :where [= id-or-url [id]] :flatp t)))
+      (string (car (select 'reddit.view-defs:article-with-sn :where [= id-or-url [url]] :flatp t))))))
 
 (defun get-article (id-or-url)
   (when id-or-url
     (typecase id-or-url
-      (integer (car (select 'article :where [= id-or-url [id]] :flatp t)))
-      (string (car (select 'article :where [= id-or-url [url]] :flatp t))))))
+      (integer (car (select 'reddit.view-defs:article :where [= id-or-url [id]] :flatp t)))
+      (string (car (select 'reddit.view-defs:article :where [= id-or-url [url]] :flatp t))))))
 
 ;;similar urls
 (defun similar-urls (url)
@@ -194,7 +196,7 @@
          (when-valid (:userid submitter :ip ip)
            (setf url (add-http url))
            (let ((article (or (get-article (article-id-from-url url))
-                              (make-instance 'article :id (sequence-next "articleid") :url url
+                              (make-instance 'reddit.view-defs:article :id (sequence-next "articleid") :url url
                                              :title title :date (get-time) :submitterid submitter))))
              (update-records-from-instance article)
              (like-and-mod submitter (article-id article) t ip)
@@ -209,8 +211,8 @@
 ;;--------------------------- neuter ---------------------------
 (defun neuterd (id-or-ip)
   (typecase id-or-ip
-    (string (car (select 'neuter :where [= id-or-ip [ip]] :flatp t)))
-    (integer (car (select 'neuter :where [= id-or-ip [userid]] :flatp t)))))
+    (string (car (select 'reddit.view-defs:neuter :where [= id-or-ip [ip]] :flatp t)))
+    (integer (car (select 'reddit.view-defs:neuter :where [= id-or-ip [userid]] :flatp t)))))
   
 ;;------------------------- options ----------------------------
 (defun get-user-options (userid)
@@ -255,7 +257,7 @@
   (when (and userid targetid articleid ip amount)
     (let ((moduser (or (get-mod-user userid targetid articleid )
                        (make-instance 'moduser :userid userid :targetid targetid :articleid articleid))))
-      (log-message* "MOD-USER: userid: ~a target: ~a article: ~a ip: ~a amount: ~a"
+      (log-message :INFO "MOD-USER: userid: ~a target: ~a article: ~a ip: ~a amount: ~a"
                     userid targetid articleid ip amount)
       (setf (moduser-amount moduser) amount
             (moduser-date moduser) (get-time)
@@ -271,15 +273,15 @@
   (mod-article userid articleid ip amount))
 
 (defun get-mod-article (userid articleid)
-  (car (select 'modarticle :where [and [= [userid] userid]
+  (car (select 'reddit.view-defs:modarticle :where [and [= [userid] userid]
                                        [= [article] articleid]]
                :flatp t)))
 
 (defun mod-article (userid articleid ip amount)
   (and userid articleid ip amount
        (let ((modarticle (or (get-mod-article userid articleid)
-                             (make-instance 'modarticle :userid userid :articleid articleid))))
-         (log-message* "MOD-ARTICLE: userid: ~a article: ~a ip: ~a amount: ~a"
+                             (make-instance 'reddit.view-defs:modarticle :userid userid :articleid articleid))))
+         (log-message :INFO "MOD-ARTICLE: userid: ~a article: ~a ip: ~a amount: ~a"
                      userid articleid ip amount)
          (setf (modarticle-amount modarticle) amount
                (modarticle-ip modarticle) ip
@@ -291,7 +293,7 @@
   (and articleid ip
        (when-valid (:userid userid :articleid articleid :ip ip)
          (let ((click (make-instance 'click :userid userid :articleid articleid :ip ip)))
-           (log-message* "CLICK user: ~a article: ~a ip: ~a" userid articleid ip)
+           (log-message :INFO "CLICK user: ~a article: ~a ip: ~a" userid articleid ip)
            (update-records-from-instance click)))))
 
 
@@ -304,14 +306,14 @@
       
 ;;--------------------------- like-site ---------------------------
 (defun get-like-site (userid articleid)
-  (car (select 'like :where [and [= userid [userid]] [= articleid [article]]] :flatp t)))
+  (car (select 'reddit.view-defs:like :where [and [= userid [userid]] [= articleid [article]]] :flatp t)))
 
 (defun like-site (userid articleid liked)
   "Inserts or updates a user's liking of a site."
-  (log-message* "LIKE user: ~a article: ~a like: ~a" userid articleid liked)
+  (log-message :INFO "LIKE user: ~a article: ~a like: ~a" userid articleid liked)
   (and userid articleid
        (let ((like (or (get-like-site userid articleid)
-                       (make-instance 'like :userid userid :articleid articleid))))
+                       (make-instance 'reddit.view-defs:like :userid userid :articleid articleid))))
          (setf (like-date like) (get-time)
                (like-like like) liked)
          (update-records-from-instance like))))
@@ -319,7 +321,7 @@
 (defun unlike-site (userid articleid)
   (and userid articleid
        (progn
-         (log-message* "UNLIKE user: ~a article: ~a" userid articleid)
+         (log-message :INFO "UNLIKE user: ~a article: ~a" userid articleid)
          (when-bind (like (get-like-site userid articleid))
            (delete-instance-records like)))))
 

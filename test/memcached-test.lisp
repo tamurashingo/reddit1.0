@@ -11,10 +11,11 @@
 (in-package :reddit-test/memcached)
 
 (setup
-  (reddit.config:set-config '(:environment "test"
-                              :memcached (:server "localhost"
-                                          :port 11211)))
-  (initialize))
+  (initialize)
+  (cl-memcached:mc-del "test1" :memcache reddit.memcached::*memcached*)
+  (cl-memcached:mc-del "key1" :memcache reddit.memcached::*memcached*)
+  (cl-memcached:mc-del "key2" :memcache reddit.memcached::*memcached*))
+
 
 (teardown
   (cl-memcached:mc-del "test1" :memcache reddit.memcached::*memcached*)
