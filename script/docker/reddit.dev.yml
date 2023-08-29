@@ -1,7 +1,9 @@
 version: '3'
 services:
   reddit:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     volumes:
       - ../../:/reddit
     ports:
