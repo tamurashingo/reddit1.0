@@ -18,8 +18,7 @@
 
 (teardown
   (clsql:stop-sql-recording :type :both)
-  (reddit.main::disconnect-database)
-  (format T "ok"))
+  (reddit.main::disconnect-database))
 
 (deftest register-user-and-check
   (testing "register normal user"

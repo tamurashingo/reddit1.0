@@ -1,0 +1,17 @@
+FROM fukamachi/sbcl
+
+RUN apt-get update && apt-get install -y libpq-dev
+
+RUN mkdir /reddit
+WORKDIR /reddit
+COPY . /reddit
+
+COPY entrypoint.test.sh /usr/bin/
+RUN chmod +x /usr/bin/entrypoint.test.sh
+ENTRYPOINT ["entrypoint.test.sh"]
+
+CMD [ "ros", "run", \
+      "-e", "(ql:quickload :reddit)", \
+      "-e", "(ql:quickload :reddit-db)", \
+      "-e", "(ql:quickload :reddit-test)", \
+      "-e", "(asdf:test-system :reddit-test)"]

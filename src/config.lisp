@@ -70,7 +70,7 @@
                :username ,(env-or-default "REDDIT_DATABASE_USERNAME" "pgsql")
                :password ,(env-or-default "REDDIT_DATABASE_PASSWORD" "pgcwip42:"))
     :memcached (:server ,(env-or-default "REDDIT_MEMCACHED_SERVER" "memcached")
-                :port ,(parse-integer (env-or-default "REDDIT_MEMCACHED_PORT" "11212")))
+                :port ,(parse-integer (env-or-default "REDDIT_MEMCACHED_PORT" "11211")))
     :mail (:server ,(env-or-default "REDDIT_MAIL_SERVER" "mail")
            :username ,(env-or-default "REDDIT_MAIL_USERNAME" "username")
            :password ,(env-or-default "REDDIT_MAIL_PASSWORD" "password")

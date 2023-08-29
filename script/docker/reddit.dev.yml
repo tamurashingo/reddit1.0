@@ -1,0 +1,15 @@
+version: '3'
+services:
+  reddit:
+    build: .
+    volumes:
+      - ../../:/reddit
+    ports:
+      - "8000:8000"
+      - "4005:4005"
+    tty: true
+    networks:
+      - reddit10_dev_nw
+networks:
+  reddit10_dev_nw:
+    external: true

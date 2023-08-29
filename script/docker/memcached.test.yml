@@ -1,0 +1,11 @@
+version: '3'
+services:
+  memcached:
+    image: memcached:1.6.21-alpine3.18
+    ports:
+      - "11212:11211"
+    networks:
+      - reddit10_test_nw
+networks:
+  reddit10_test_nw:
+    external: true

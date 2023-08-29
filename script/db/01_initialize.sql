@@ -1,2 +1,3 @@
 CREATE DATABASE reddit;
+CREATE DATABASE reddit_test;
 
