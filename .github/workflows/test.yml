@@ -50,3 +50,11 @@ jobs:
           rove reddit-test.asd
         env:
           CL_SOURCE_REGISTRY: ${{ github.workspace }}
+          REDDIT_DATABASE_DATABASE: "reddit_test"
+          REDDIT_DATABASE_SERVER: "127.0.0.1"
+          REDDIT_DATABASE_PORT: "5432"
+          REDDIT_DATABASE_USERNAME: "pgsql"
+          REDDIT_DATABASE_PASSWORD: "pgcwip42:"
+          REDDIT_MEMCACHED_SERVER: "127.0.0.1"
+          REDDIT_MEMCACHED_PORT: "11211"
+
