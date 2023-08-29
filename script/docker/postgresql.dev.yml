@@ -1,0 +1,17 @@
+version: '3'
+services:
+  db:
+    image: postgres:10.21-alpine3.16
+    environment:
+      POSTGRES_USER: pgsql
+      POSTGRES_PASSWORD: "pgcwip42:"
+    ports:
+      - '5432:5432'
+    volumes:
+      - ../../tmp/db/dev:/var/lib/postgresql/data
+      - ../../script/db:/docker-entrypoint-initdb.d
+    networks:
+      - reddit10_dev_nw
+networks:
+  reddit10_dev_nw:
+    external: true

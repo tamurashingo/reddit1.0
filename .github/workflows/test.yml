@@ -6,23 +6,55 @@ on:
       - '**'
 
 jobs:
-  tests:
+  test:
     runs-on: ubuntu-latest
-
+    services:
+      postgres:
+        image: postgres:10.21-alpine3.16
+        env:
+          POSTGRES_USER: pgsql
+          POSTGRES_PASSWORD: "pgcwip42:"
+          POSTGRES_DB: reddit_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     strategy:
       matrix:
         lisp:
           - sbcl-bin
-
-    env:
-      LISP: ${{ matrix.lisp }}
-
     steps:
       - uses: actions/checkout@v3
       - uses: niden/actions-memcached@v7
-      - uses: 40ants/setup-lisp@v2
-        with:
-          asdf-system: reddit-test
-      - uses: 40ants/run-tests@v2
-        with:
-          asdf-system: reddit-test
+      - name: Install roswell
+        run: |
+          curl -L https://raw.githubusercontent.com/roswell/roswell/v22.12.14.113/scripts/install-for-ci.sh | sh
+          ros install fukamachi/rove
+          export PATH=$HOME/.roswell/bin:$PATH
+        env:
+          LISP: ${{ matrix.lisp }}
+      - name: build
+        run: |
+          ros install ${{ matrix.lisp }}
+          ros use ${{ matrix.lisp }}
+          ros run -e '(ql:quickload :reddit)' -e '(ql:quickload :reddit-db)'
+        env:
+          CL_SOURCE_REGISTRY: ${{ github.workspace }}
+      - name: Run test
+        run: |
+          export PATH=$HOME/.roswell/bin:$PATH
+          ros use ${{ matrix.lisp }}
+          rove reddit-test.asd
+        env:
+          CL_SOURCE_REGISTRY: ${{ github.workspace }}
+          REDDIT_DATABASE_DATABASE: "reddit_test"
+          REDDIT_DATABASE_SERVER: "127.0.0.1"
+          REDDIT_DATABASE_PORT: "5432"
+          REDDIT_DATABASE_USERNAME: "pgsql"
+          REDDIT_DATABASE_PASSWORD: "pgcwip42:"
+          REDDIT_MEMCACHED_SERVER: "127.0.0.1"
+          REDDIT_MEMCACHED_PORT: "11211"
+

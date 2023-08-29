@@ -7,6 +7,7 @@ This version is an easier version to develop using docker.
 
 ## Require
 
+- GNU Make
 - Docker Compose
 
 ### Run
@@ -14,7 +15,10 @@ This version is an easier version to develop using docker.
 Run docker.
 
 ```sh
-docker-compose up
+# for create docker network
+make setup
+
+make dev.up
 ```
 
 Connect Swank, for example from emacs.
@@ -38,6 +42,7 @@ M-x slime-connect localhost 4005
 
 ;; migrate database
 (ql:quickload :reddit-db)
+(reddit.db.migration:up)
 
 ;; disconnect database
 (reddit.main::disconnect-database)
@@ -57,20 +62,83 @@ open http://localhost:8000/
 
 ### stop
 
+shutdown reddit application.
+
 ```lisp
 (reddit:shutdown-reddit)
 ```
 
+
+shutdown docker containers.
+
+```sh
+make dev.down
+```
+
+### run tests
+
+```sh
+# startup docker containers
+make test.up
+
+# run test
+make test.run
+
+# shutdown docker containers
+make test.down
+```
+
+
 ## hint
 
-### databsae
 
-- database-name: `reddit`
-- database-server: `db`
-- username: `pgsql`
-- password: `pgcwip42:`
+### configuration
 
-it's defined on src/data.lisp.
+Variables such as database user name can be overridden by environment variables.
+
+
+| environment | type      | name        | value         | environment vriable        |
+| ----------- | --------- | ----------- | ------------- | -------------------------- |
+| docker      | database  | server      | `db`          | `REDDIT_DATABASE_SERVER`   |
+|             |           | port        | `5432`        | `REDDIT_DATABASE_PORT`     |
+|             |           | database    | `reddit`      | `REDDIT_DATABASE_DATABASE` |
+|             |           | username    | `pgsql`       | `REDDIT_DATABASE_USERNAME` |
+|             |           | password    | `pgcwip42:`   | `REDDIT_DATABASE_PASSWORD` |
+|             | memcached | server      | `memcached`   | `REDDIT_MEMCACHED_SERVER`  |
+|             |           | port        | `11211`       | `REDDIT_MEMCACHED_PORT`    |
+|             | mail      | server      | `mail`        | `REDDIT_MAIL_SERVER`       |
+|             |           | port        | `25`          | `REDDIT_MAIL_PORT`         |
+|             |           | username    | `username`    | `REDDIT_MAIL_USERNAME`     |
+|             |           | password    | `password`    | `REDDIT_MAIL_PASSWORD`     |
+|             | logger    | logger-name | `stdout`      |                            |
+| development | database  | server      | `127.0.0.1`   | `REDDIT_DATABASE_SERVER`   |
+|             |           | port        | `5432`        | `REDDIT_DATABASE_PORT`     |
+|             |           | database    | `reddit`      | `REDDIT_DATABASE_DATABASE` |
+|             |           | username    | `pgsql`       | `REDDIT_DATABASE_USERNAME` |
+|             |           | password    | `pgcwip42:`   | `REDDIT_DATABASE_PASSWORD` |
+|             | memcached | server      | `127.0.0.1`   | `REDDIT_MEMCACHED_SERVER`  |
+|             |           | port        | `11211`       | `REDDIT_MEMCACHED_PORT`    |
+|             | mail      | server      | `127.0.0.1`   | `REDDIT_MAIL_SERVER`       |
+|             |           | port        | `25`          | `REDDIT_MAIL_PORT`         |
+|             |           | username    | `username`    | `REDDIT_MAIL_USERNAME`     |
+|             |           | password    | `password`    | `REDDIT_MAIL_PASSWORD`     |
+|             | logger    | logger-name | `stdout`      |                            |
+| test        | database  | server      | `db`          | `REDDIT_DATABASE_SERVER`   |
+|             |           | port        | `5432`        | `REDDIT_DATABASE_PORT`     |
+|             |           | database    | `reddit_test` | `REDDIT_DATABASE_DATABASE` |
+|             |           | username    | `pgsql`       | `REDDIT_DATABASE_USERNAME` |
+|             |           | password    | `pgcwip42:`   | `REDDIT_DATABASE_PASSWORD` |
+|             | memcached | server      | `memcached`   | `REDDIT_MEMCACHED_SERVER`  |
+|             |           | port        | `11211`       | `REDDIT_MEMCACHED_PORT`    |
+|             | mail      | server      | `mail`        | `REDDIT_MAIL_SERVER`       |
+|             |           | port        | `25`          | `REDDIT_MAIL_PORT`         |
+|             |           | username    | `username`    | `REDDIT_MAIL_USERNAME`     |
+|             |           | password    | `password`    | `REDDIT_MAIL_PASSWORD`     |
+|             | logger    | logger-name | `stdout`      |                            |
+
+
+it's defined on src/config.lisp
+
 
 ### routing
 
@@ -87,7 +155,7 @@ To read email, open 'http://localhost:8025' .
 To regenerate password, run this
 
 ```sh
-docker-compse run mailserver bcrypt password
+docker-compse -f script/docker/sendmail.dev.yml run mailserver bcrypt newpassword
 ```
 
 and read it.
@@ -103,153 +171,7 @@ https://github.com/mailhog/MailHog/blob/master/docs/Auth.md
 
 ## notes
 
-Tables
-
-```sql
-reddit=> \d
-          List of relations
- Schema |    Name     | Type  | Owner
---------+-------------+-------+-------
- public | alias       | table | pgsql
- public | articles    | table | pgsql
- public | articles_sn | table | pgsql
- public | clicks      | table | pgsql
- public | like_site   | table | pgsql
- public | mod_article | table | pgsql
- public | mod_user    | table | pgsql
- public | neuter      | table | pgsql
- public | options     | table | pgsql
- public | users       | table | pgsql
- public | wtf         | table | pgsql
-(11 rows)
-
-reddit=> \d alias
-                    Table "public.alias"
- Column |       Type        | Collation | Nullable | Default
---------+-------------------+-----------+----------+---------
- userid | integer           |           | not null |
- name   | character varying |           | not null |
- val    | character varying |           |          |
-Indexes:
-    "alias_pk" PRIMARY KEY, btree (userid, name)
-
-reddit=> \d articles
-                         Table "public.articles"
-  Column   |            Type             | Collation | Nullable | Default
------------+-----------------------------+-----------+----------+---------
- id        | integer                     |           | not null |
- url       | character varying           |           |          |
- title     | character varying           |           |          |
- date      | timestamp without time zone |           |          |
- submitter | integer                     |           |          |
- pop       | integer                     |           |          |
-Indexes:
-    "articles_pk" PRIMARY KEY, btree (id)
-
-reddit=> \d articles_sn
-                        Table "public.articles_sn"
-   Column   |            Type             | Collation | Nullable | Default
-------------+-----------------------------+-----------+----------+---------
- screenname | character varying           |           |          |
- id         | integer                     |           | not null |
- url        | character varying           |           |          |
- title      | character varying           |           |          |
- date       | timestamp without time zone |           |          |
- submitter  | integer                     |           |          |
- pop        | integer                     |           |          |
-Indexes:
-    "articles_sn_pk" PRIMARY KEY, btree (id)
-
-reddit=> \d clicks
-                         Table "public.clicks"
- Column  |            Type             | Collation | Nullable | Default
----------+-----------------------------+-----------+----------+---------
- userid  | integer                     |           |          |
- article | integer                     |           |          |
- date    | timestamp without time zone |           |          |
- ip      | character varying           |           |          |
-
-reddit=> \d like_site
-                        Table "public.like_site"
- Column  |            Type             | Collation | Nullable | Default
----------+-----------------------------+-----------+----------+---------
- userid  | integer                     |           | not null |
- article | integer                     |           | not null |
- date    | timestamp without time zone |           |          |
- liked   | boolean                     |           |          |
-Indexes:
-    "like_site_pk" PRIMARY KEY, btree (userid, article)
-
-reddit=> \d mod_article
-                       Table "public.mod_article"
- Column  |            Type             | Collation | Nullable | Default
----------+-----------------------------+-----------+----------+---------
- userid  | integer                     |           | not null |
- article | integer                     |           | not null |
- date    | timestamp without time zone |           |          |
- ip      | character varying           |           |          |
- amount  | integer                     |           |          |
-Indexes:
-    "mod_article_pk" PRIMARY KEY, btree (userid, article)
-
-reddit=> \d mod_user
-                        Table "public.mod_user"
- Column  |            Type             | Collation | Nullable | Default
----------+-----------------------------+-----------+----------+---------
- userid  | integer                     |           | not null |
- article | integer                     |           | not null |
- target  | integer                     |           | not null |
- date    | timestamp without time zone |           |          |
- ip      | character varying           |           |          |
- amount  | integer                     |           |          |
-Indexes:
-    "mod_user_pk" PRIMARY KEY, btree (userid, article, target)
-
-reddit=> \d neuter
-                      Table "public.neuter"
- Column |          Type          | Collation | Nullable | Default
---------+------------------------+-----------+----------+---------
- userid | integer                |           |          |
- ip     | character varying(255) |           |          |
-
-reddit=> \d options
-               Table "public.options"
-  Column  |  Type   | Collation | Nullable | Default
-----------+---------+-----------+----------+---------
- userid   | integer |           | not null |
- numsites | integer |           |          |
- promoted | boolean |           |          |
- demoted  | boolean |           |          |
- visible  | boolean |           |          |
- frame    | boolean |           |          |
-Indexes:
-    "options_pk" PRIMARY KEY, btree (userid)
-
-reddit=> \d users
-                           Table "public.users"
-   Column   |            Type             | Collation | Nullable | Default
-------------+-----------------------------+-----------+----------+---------
- id         | integer                     |           | not null |
- screenname | character varying           |           |          |
- email      | character varying           |           |          |
- karma      | integer                     |           |          |
- signupdate | timestamp without time zone |           |          |
- ip         | character varying           |           |          |
-Indexes:
-    "users_pk" PRIMARY KEY, btree (id)
-
-reddit=> \d wtf
-                           Table "public.wtf"
- Column  |            Type             | Collation | Nullable | Default
----------+-----------------------------+-----------+----------+---------
- userid  | integer                     |           | not null |
- article | integer                     |           | not null |
- reason  | character(250)              |           |          |
- date    | timestamp without time zone |           |          |
-Indexes:
-    "wtf_pk" PRIMARY KEY, btree (userid, article)
-```
-
+...
 
 ---
 - original Copyright 2018 Reddit, Inc.

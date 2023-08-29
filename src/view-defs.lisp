@@ -97,12 +97,12 @@
    (screenname
     :type string
     :reader user-name)
-   (password
-    :type string
-    :reader password)
    (email
     :type string
     :accessor user-emai)
+   (password
+    :type string
+    :reader password)
    (karma
     :type integer
     :reader user-karma)

@@ -1,0 +1,16 @@
+version: '3'
+services:
+  mailserver:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    environment:
+      MH_AUTH_FILE: /auth/auth.txt
+    volumes:
+      - ../../script/mailserver:/auth
+    networks:
+      - reddit10_dev_nw
+networks:
+  reddit10_dev_nw:
+    external: true
