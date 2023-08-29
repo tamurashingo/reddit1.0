@@ -63,6 +63,6 @@
                     "127.0.0.1")
 
     ;; validate
-    (ok (not (null (article-id-from-url "https://www.yahoo.co.jp"))))
+    (ok (not (null (reddit.data::article-id-from-url "https://www.yahoo.co.jp"))))
     (ok (not (null (get-article "https://www.yahoo.co.jp"))))))
 
