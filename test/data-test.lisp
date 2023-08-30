@@ -51,7 +51,7 @@
 
 
 (deftest article
-  (testing "article"
+  (testing "insert article"
     ;; prepare
     (add-user "tamu-article-1" "tamu-article-1@example.com" "password1" "127.0.0.1")
 
@@ -63,5 +63,31 @@
 
     ;; validate
     (ok (not (null (reddit.data::article-id-from-url "https://www.yahoo.co.jp"))))
-    (ok (not (null (get-article "https://www.yahoo.co.jp"))))))
+    (ok (not (null (get-article "https://www.yahoo.co.jp"))))
+    (ok (not (null (reddit.data::get-mod-article (valid-user-p "tamu-article-1")
+                                                 (reddit.data::article-id-from-url "https://www.yahoo.co.jp")))))
+    (ok (not (null (reddit.data::get-like-site (valid-user-p "tamu-article-1")
+                                               (reddit.data::article-id-from-url "https://www.yahoo.co.jp"))))))
+
+  (testing "insert same article"
+    ;; prepare
+    (add-user "tamu-article-2" "tamu-article-2@example.com" "password2" "127.0.0.1")
+    (add-user "tamu-article-3" "tamu-article-3@example.com" "password3" "127.0.0.1")
+
+    ;; do
+    (insert-article "yahoo news"
+                    "https://news.yahoo.co.jp"
+                    (valid-user-p "tamu-article-2")
+                    "127.0.0.1")
+
+    ;; validate
+    (ok (null (insert-article "yahoo news is cool"
+                              "https://news.yahoo.co.jp"
+                              (valid-user-p "tamu-article-2")
+                              "127.0.0.1"))))
+  )
+
+
+
+
 
