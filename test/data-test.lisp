@@ -85,9 +85,24 @@
                               "https://news.yahoo.co.jp"
                               (valid-user-p "tamu-article-2")
                               "127.0.0.1"))))
-  )
 
+  (testing "remove article"
+    ;; prepare
+    (add-user "tamu-article-4" "tamu-article-4@example.com" "password4" "127.0.0.1")
 
+    ;; do
+    (insert-article "search engine"
+                    "https://www.google.com"
+                    (valid-user-p "tamu-article-4")
+                    "127.0.0.1")
 
+    ;; pre-validate
+    (ok (not (null (reddit.data::article-id-from-url "https://www.google.com"))))
 
+    ;; do remove
+    (reddit.data::remove-article (valid-user-p "tamu-article-4")
+                                 (reddit.data::article-id-from-url "https://www.google.com"))
+
+    ;; validate
+    (ok (null (reddit.data::article-id-from-url "https://www.google.com")))))
 
