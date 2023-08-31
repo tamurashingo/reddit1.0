@@ -106,3 +106,34 @@
     ;; validate
     (ok (null (reddit.data::article-id-from-url "https://www.google.com")))))
 
+
+(deftest neuterd
+  (testing "neuterd by user"
+    ;; prepare
+    (add-user "tamu-neuterd-1" "tamu-neuterd-1@example.com" "password1" "127.0.0.1")
+    (clsql:query (format NIL "insert into neuter (userid) values (~A)"
+                         (valid-user-p "tamu-neuterd-1")))
+
+    ;; do
+    (insert-article "reddit programming"
+                    "https://www.reddit.com/r/programming/"
+                    (valid-user-p "tamu-neuterd-1")
+                    "127.0.0.1")
+
+    ;; validate
+    (ok (null (reddit.data::article-id-from-url "https://www.reddit.com/r/programming/"))))
+
+  (testing "neuterd by ip address"
+    ;; prepare
+    (add-user "tamu-neuterd-2" "tamu-neuterd-2@example.com" "password2" "127.0.0.1")
+    (clsql:query "insert into neuter (ip) values ('192.168.1.1')")
+
+    ;; do
+    (insert-article "reddit lisp"
+                    "https://www.reddit.com/r/lisp/"
+                    (valid-user-p "tamu-neuterd-2")
+                    "192.168.1.1")
+
+    ;; validate
+    (ok (null (reddit.data::article-id-from-url "https://www.reddit.com/r/lisp/")))))
+
