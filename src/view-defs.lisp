@@ -77,7 +77,7 @@
            :neuter-ip
            :options
            :options-userid
-           :options-nnumsittes
+           :options-numsites
            :options-promoted
            :options-demoted
            :options-visible

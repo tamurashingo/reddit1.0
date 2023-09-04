@@ -216,8 +216,8 @@
   
 ;;------------------------- options ----------------------------
 (defun get-user-options (userid)
-  (or (car (select 'options :where [= userid [userid]] :flatp t))
-      (make-instance 'options :userid userid :promoted t :demoted nil :numsites 25 :visible nil :frame nil)))
+  (or (car (select 'reddit.view-defs:options :where [= userid [userid]] :flatp t))
+      (make-instance 'reddit.view-defs:options :userid userid :promoted t :demoted nil :numsites 25 :visible nil :frame nil)))
 
 (defun profile-visible (userid)
   (options-visible (get-user-options userid)))

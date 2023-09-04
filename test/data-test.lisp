@@ -137,3 +137,41 @@
     ;; validate
     (ok (null (reddit.data::article-id-from-url "https://www.reddit.com/r/lisp/")))))
 
+
+(deftest options
+  (testing "option not registered"
+    ;; prepare
+
+    ;; do
+    (setf opt (reddit.data::get-user-options 1))
+
+    ;; validate default value
+    (ok (not (null opt)))
+    (ok (eql (reddit.view-defs:options-userid opt) 1))
+    (ok (not (null (reddit.view-defs:options-promoted opt))))
+    (ok (null (reddit.view-defs:options-demoted opt)))
+    (ok (eql (reddit.view-defs:options-numsites opt) 25))
+    (ok (null (reddit.view-defs:options-visible opt)))
+    (ok (null (reddit.view-defs:options-frame opt))))
+
+  (testing "option registered"
+    ;; prepare
+    (clsql:query "insert into options (userid, numsites, promoted, demoted, visible, frame) values (2, 30, false, true, true, true)")
+
+    ;; do
+    (setf opt2 (reddit.data::get-user-options 2))
+
+    ;; validate
+    (ok (not (null opt2)))
+    (ok (eql (reddit.view-defs:options-userid opt2) 2))
+    (ok (null (reddit.view-defs:options-promoted opt2)))
+    (ok (not (null (reddit.view-defs:options-demoted opt2))))
+    (ok (eql (reddit.view-defs:options-numsites opt2) 30))
+    (ok (not (null (reddit.view-defs:options-visible opt2))))
+    (ok (not (null (reddit.view-defs:options-frame opt2))))))
+
+
+
+
+
+
