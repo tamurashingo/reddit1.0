@@ -170,8 +170,39 @@
     (ok (not (null (reddit.view-defs:options-visible opt2))))
     (ok (not (null (reddit.view-defs:options-frame opt2))))))
 
+(deftest profile-visible
+  (testing "no registered user"
+    (ok (null (reddit.data::profile-visible 3000))))
+
+  (testing "registered user: visiblle: t"
+    ;; prepare
+    (clsql:query "insert into options (userid, visible) values (3001, true)")
+
+    ;; do
+
+    ;; validate
+    (ok (not (null (reddit.data::profile-visible 3001))))))
 
 
+(deftest mod-user
+  (testing "no registered mod-user"
+    ;; prepare
 
+    ;; do
+    (reddit.data::mod-user 4000 4100 4200 "192.168.100.101" 1)
+    (setf mu1 (reddit.data::get-mod-user 4000 4100 4200))
 
+    ;; validate
+    (ok (not (null mu1)))
+    (ok (eql (reddit.view-defs:moduser-amount mu1) 1))
+    (ok (string= (reddit.view-defs:moduser-ip mu1) "192.168.100.101"))
+    (ok (not (null (reddit.view-defs:moduser-date mu1)))))
 
+  (testing "registered mod-user"
+    ;; prepare
+    ;; (clsql:"insert into mod_user (userid, article, target, date, ip, amount) values ()")
+
+    ;; do
+
+    ;; validate
+    ))

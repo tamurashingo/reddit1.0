@@ -248,15 +248,15 @@
          (mod-user userid (article-submitterid article) articleid ip amount))))
          
 (defun get-mod-user (userid targetid articleid)
-  (car (select 'moduser :where [and [= [userid] userid]
-                                    [= [target] targetid]
-                                    [= [article] articleid]]
+  (car (select 'reddit.view-defs:moduser :where [and [= [userid] userid]
+                                                     [= [target] targetid]
+                                                     [= [article] articleid]]
                :flatp t)))
 
 (defun mod-user (userid targetid articleid ip amount)
   (when (and userid targetid articleid ip amount)
     (let ((moduser (or (get-mod-user userid targetid articleid )
-                       (make-instance 'moduser :userid userid :targetid targetid :articleid articleid))))
+                       (make-instance 'reddit.view-defs:moduser :userid userid :targetid targetid :articleid articleid))))
       (log-message :INFO "MOD-USER: userid: ~a target: ~a article: ~a ip: ~a amount: ~a"
                     userid targetid articleid ip amount)
       (setf (moduser-amount moduser) amount
