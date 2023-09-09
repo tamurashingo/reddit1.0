@@ -284,7 +284,7 @@
                     "https://news.ycombinator.com/front"
                     (valid-user-p "mod-tamu4")
                     "127.0.0.1")
-    (let ((a (reddit.data::get-article "https://news.ycombinator.com/front")))
+    (let ((a (get-article "https://news.ycombinator.com/front")))
       (setf (reddit.view-defs:article-date a) (clsql:time- (clsql:get-time)
                                                            (clsql:make-duration :day 2 :second 1)))
       (clsql:update-records-from-instance a))
@@ -386,11 +386,19 @@
 (deftest view-link
   (testing "valid user clicks"
     ;; prepare
+    (add-user "tamu8" "tamu8@example.com" "password8" "127.0.0.1")
+    (insert-article "HN ask"
+                    "https://news.ycombinator.com/ask"
+                    (valid-user-p "tamu8")
+                    "127.0.0.1")
+
 
     ;; do
-    (reddit.data::view-link 1001 2001 "192.168.100.101")
+    (reddit.data::view-link (valid-user-p "tamu8")
+                            (reddit.data::article-id-from-url "https://news.ycombinator.com/ask")
+                            "192.168.100.101")
 
     ;; validate
-    (ok (reddit.data::user-clicked-p 1001 2001))))
-
+    (ok (reddit.data::user-clicked-p (valid-user-p "tamu8")
+                                     (reddit.data::article-id-from-url "https://news.ycombinator.com/ask")))))
 
