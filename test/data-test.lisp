@@ -200,9 +200,197 @@
 
   (testing "registered mod-user"
     ;; prepare
-    ;; (clsql:"insert into mod_user (userid, article, target, date, ip, amount) values ()")
+    (clsql:query "insert into mod_user (userid, article, target, date, ip, amount) values (4001, 4101, 4202, now(), '192.168.100.102', 2)")
 
     ;; do
+    (reddit.data::mod-user 4001 4101 4201 "192.168.100.103" 5)
+    (setf mu2 (reddit.data::get-mod-user 4001 4101 4201))
 
     ;; validate
-    ))
+    (ok (not (null mu2)))
+    (ok (eq (reddit.view-defs:moduser-amount mu2) 5))
+    (ok (string= (reddit.view-defs:moduser-ip mu2) "192.168.100.103"))
+    (ok (not (null (reddit.view-defs:moduser-date mu2))))))
+
+(deftest check-and-mod-user
+  (testing "mod other's article"
+    ;; prepare
+    ;; register user1
+    (add-user "mod-tamu1" "mod-tamu1@example.com" "password1" "127.0.0.1")
+    ;; register user2
+    (add-user "mod-tamu2" "mod-tamu2@example.com" "password2" "127.0.0.1")
+    (let ((user2 (reddit.data::get-user "mod-tamu2")))
+      (setf (slot-value user2 'reddit.view-defs::karma) 20)
+      (clsql:update-records-from-instance user2))
+
+    ;; insert article
+    (insert-article "HN"
+                    "https://news.ycombinator.com/"
+                    (valid-user-p "mod-tamu1")
+                    "127.0.0.1")
+
+    ;; do
+    (reddit.data::check-and-mod-user (valid-user-p "mod-tamu2")
+                                     (reddit.data::article-id-from-url "https://news.ycombinator.com/")
+                                     "192.168.100.104"
+                                     10)
+    (setf mu3 (reddit.data::get-mod-user (valid-user-p "mod-tamu2") ; mod-user
+                                         (valid-user-p "mod-tamu1") ; article-submitter
+                                         (reddit.data::article-id-from-url "https://news.ycombinator.com/"))) ; article
+
+    (format T "~A" (clsql:query "select * from mod_user"))
+
+
+    ;; validate
+    (ok (not (null mu3)))
+    (ok (eq (reddit.view-defs:moduser-amount mu3) 10))
+    (ok (string= (reddit.view-defs:moduser-ip mu3) "192.168.100.104")))
+
+  (testing "mod own article -> no-mod"
+    ;; prepare
+    (add-user "mod-tamu3" "mod-tamu3@example.com" "password3" "127.0.0.1")
+    (let ((user3 (reddit.data::get-user "mod-tamu3")))
+      (setf (slot-value user3 'reddit.view-defs::karma) 20)
+      (clsql:update-records-from-instance user3))
+
+    ;; insert article
+    (insert-article "HN newest"
+                    "https://news.ycombinator.com/newest"
+                    (valid-user-p "mod-tamu3")
+                    "127.0.0.1")
+
+    ;; do
+    (reddit.data::check-and-mod-user (valid-user-p "mod-tamu3")
+                                     (reddit.data::article-id-from-url "https://news.ycombinator.com/newest")
+                                     "192.168.100.105"
+                                     20)
+    (setf mu4 (reddit.data::get-mod-user (valid-user-p "mod-tamu3")
+                                         (valid-user-p "mod-tamu3")
+                                         (reddit.data::article-id-from-url "https://news.ycombinator.com/newest")))
+
+    ;; validate
+    (ok (null mu4)))
+
+  (testing "mod 3days ago article -> no-mod"
+    ;; prepare
+    (add-user "mod-tamu4" "mod-tamu4@example.com" "password4" "127.0.0.1")
+    (add-user "mod-tamu5" "mod-tamu5@example.com" "password5" "127.0.0.1")
+    (let ((user5 (reddit.data::get-user "mod-tamu5")))
+      (setf (slot-value user5 'reddit.view-defs::karma) 20)
+      (clsql:update-records-from-instance user5))
+
+    ;; insert article
+    (insert-article "HN past"
+                    "https://news.ycombinator.com/front"
+                    (valid-user-p "mod-tamu4")
+                    "127.0.0.1")
+    (let ((a (reddit.data::get-article "https://news.ycombinator.com/front")))
+      (setf (reddit.view-defs:article-date a) (clsql:time- (clsql:get-time)
+                                                           (clsql:make-duration :day 2 :second 1)))
+      (clsql:update-records-from-instance a))
+
+    ;; do
+    (reddit.data::check-and-mod-user (valid-user-p "mod-tamu5")
+                                     (reddit.data::article-id-from-url "https://news.ycombinator.com/front")
+                                     "192.168.100.105"
+                                     20)
+    (setf mu5 (reddit.data::get-mod-user (valid-user-p "mod-tamu5")
+                                         (valid-user-p "mod-tamu4")
+                                         (reddit.data::article-id-from-url "https://news.ycombinator.com/front")))
+
+    ;; validate
+    (ok (null mu5)))
+
+  (testing "user karma less than equal 10 -> no-mod"
+    ;; prepare
+    (add-user "mod-tamu6" "mod-tamu6@example.com" "password6" "127.0.0.1")
+    (add-user "mod-tamu7" "mod-tamu7@example.com" "password7" "127.0.0.1")
+    (let ((user7 (reddit.data::get-user "mod-tamu7")))
+      (setf (slot-value user7 'reddit.view-defs::karma) 10)
+      (clsql:update-records-from-instance user7))
+
+    ;; insert article
+    (insert-article "HN comments"
+                    "https://news.ycombinator.com/newcomments"
+                    (valid-user-p "mod-tamu6")
+                    "127.0.0.1")
+
+    ;; do
+    (reddit.data::check-and-mod-user (valid-user-p "mod-tamu7")
+                                     (reddit.data::article-id-from-url "https://news.ycombinator.com/newcomments")
+                                     "192.168.100.107"
+                                     30)
+    (setf mu6 (reddit.data::get-mod-user (valid-user-p "mod-tamu7")
+                                         (valid-user-p "mod-tamu6")
+                                         (reddit.data::article-id-from-url "https://news.ycombinator.com/newcomments")))
+
+    ;; validate
+    (ok (null mu6))))
+
+
+(deftest mod-article
+  (testing "no registered mod_article"
+    ;; prepare
+
+    ;; do
+    (reddit.data::mod-article 5001 5101 "192.168.100.001" 10)
+    (setf ma1 (reddit.data::get-mod-article 5001 5101))
+
+    ;; validate
+    (ok (not (null ma1)))
+    (ok (eql (reddit.view-defs:modarticle-amount ma1) 10))
+    (ok (string= (reddit.view-defs:modarticle-ip ma1) "192.168.100.001")))
+
+  (testing "registered mod_article"
+    ;; prepare
+    (clsql:query "insert into mod_article (userid, article, date, ip, amount) values (5002, 5102, now(), '192.168.100.001', 10)")
+
+    ;; do
+    (reddit.data::mod-article 5002 5102 "192.168.100.002" 20)
+    (setf ma2 (reddit.data::get-mod-article 5002 5102))
+
+    ;; validate
+    (ok (not (null ma2)))
+    (ok (eql (reddit.view-defs:modarticle-amount ma2) 20))
+    (ok (string= (reddit.view-defs:modarticle-ip ma2) "192.168.100.002"))))
+
+
+(deftest check-and-mod-article
+  ;;; same as mod-article
+  (testing "no registered mod_article"
+    ;; prepare
+
+    ;; do
+    (reddit.data::mod-article 6001 6101 "192.168.100.001" 10)
+    (setf cma1 (reddit.data::get-mod-article 6001 6101))
+
+    ;; validate
+    (ok (not (null cma1)))
+    (ok (eql (reddit.view-defs:modarticle-amount cma1) 10))
+    (ok (string= (reddit.view-defs:modarticle-ip cma1) "192.168.100.001")))
+
+  (testing "registered mod_article"
+    ;; prepare
+    (clsql:query "insert into mod_article (userid, article, date, ip, amount) values (6002, 6102, now(), '192.168.100.001', 10)")
+
+    ;; do
+    (reddit.data::mod-article 6002 6102 "192.168.100.002" 20)
+    (setf cma2 (reddit.data::get-mod-article 6002 6102))
+
+    ;; validate
+    (ok (not (null cma2)))
+    (ok (eql (reddit.view-defs:modarticle-amount cma2) 20))
+    (ok (string= (reddit.view-defs:modarticle-ip cma2) "192.168.100.002"))))
+
+
+(deftest view-link
+  (testing "valid user clicks"
+    ;; prepare
+
+    ;; do
+    (reddit.data::view-link 1001 2001 "192.168.100.101")
+
+    ;; validate
+    (ok (reddit.data::user-clicked-p 1001 2001))))
+
+

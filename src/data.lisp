@@ -267,15 +267,15 @@
 
 ;;--------------------------- mod-article -----------------------------
 (defun ip-modded-site (ip articleid)
-  (car (select 'modarticle :where [and [= ip [ip]] [= articleid [article]]] :flatp t)))
+  (car (select 'reddit.view-defs:modarticle :where [and [= ip [ip]] [= articleid [article]]] :flatp t)))
 
 (defun check-and-mod-article (userid articleid ip amount)
   (mod-article userid articleid ip amount))
 
 (defun get-mod-article (userid articleid)
   (car (select 'reddit.view-defs:modarticle :where [and [= [userid] userid]
-                                       [= [article] articleid]]
-               :flatp t)))
+                                                        [= [article] articleid]]
+                                            :flatp t)))
 
 (defun mod-article (userid articleid ip amount)
   (and userid articleid ip amount
@@ -292,7 +292,7 @@
 (defun view-link (userid articleid ip)
   (and articleid ip
        (when-valid (:userid userid :articleid articleid :ip ip)
-         (let ((click (make-instance 'click :userid userid :articleid articleid :ip ip)))
+         (let ((click (make-instance 'reddit.view-defs:click :userid userid :articleid articleid :ip ip)))
            (log-message :INFO "CLICK user: ~a article: ~a ip: ~a" userid articleid ip)
            (update-records-from-instance click)))))
 
