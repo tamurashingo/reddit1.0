@@ -400,5 +400,25 @@
 
     ;; validate
     (ok (reddit.data::user-clicked-p (valid-user-p "tamu8")
-                                     (reddit.data::article-id-from-url "https://news.ycombinator.com/ask")))))
+                                     (reddit.data::article-id-from-url "https://news.ycombinator.com/ask"))))
+
+  (testing "invalid user clicks"
+    ;; prepare
+    (add-user "tamu9" "tamu9@example.com" "password9" "127.0.0.1")
+    (insert-article "HN show"
+                    "https://news.ycombinator.com/show"
+                    (valid-user-p "tamu9")
+                    "127.0.0.1")
+    (clsql:query "insert into neuter (ip) values ('192.168.200.100')")
+
+    ;; do
+    (reddit.data::view-link (valid-user-p "tamu9")
+                            (reddit.data::article-id-from-url "https://news.ycombinator.com/show")
+                            "192.168.200.100")
+
+    ;; validate
+    (ng (reddit.data::user-clicked-p (valid-user-p "tamu9")
+                                     (reddit.data::article-id-from-url "https://news.ycombinator.com/show")))))
+
+
 
