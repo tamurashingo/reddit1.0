@@ -343,12 +343,12 @@
 
 ;;-------------------------- aliases -------------------------------
 (defun get-alias (userid name)
-  (car (select 'alias :where [and [= [userid] userid] [= name [name]]] :flatp t)))
+  (car (select 'reddit.view-defs:alias :where [and [= [userid] userid] [= name [name]]] :flatp t)))
 
 (defun set-alias (userid name val)
   (and userid (> (length name) 0) (> (length val) 0)
        (let ((alias (or (get-alias userid name)
-                        (make-instance 'alias :userid userid))))
+                        (make-instance 'reddit.view-defs:alias :userid userid))))
          (setf (alias-name alias) name
                (alias-val alias) val)
          (update-records-from-instance alias))))

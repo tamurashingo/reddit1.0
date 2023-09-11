@@ -421,4 +421,113 @@
                                      (reddit.data::article-id-from-url "https://news.ycombinator.com/show")))))
 
 
+(deftest like-site
+  (testing "first like-site"
+    ;; prepare
+
+    ;; do
+    (reddit.data::like-site 1001 2001 T)
+    (setf ls1 (reddit.data::get-like-site 1001 2001))
+    (setf lsu1 (reddit.data::like-site-user 1001 2001))
+
+    ;; validate
+    (ok (not (null ls1)))
+    (ok (eql (reddit.view-defs:like-userid ls1) 1001))
+    (ok (eql (reddit.view-defs:like-articleid ls1) 2001))
+    (ok (reddit.view-defs:like-like ls1))
+    (ok (eq lsu1 :like)))
+
+  (testing "second like-site"
+    ;; prepare
+
+    ;; do
+    (reddit.data::like-site 1001 2001 nil)
+    (setf ls2 (reddit.data::get-like-site 1001 2001))
+    (setf lsu2 (reddit.data::like-site-user 1001 2001))
+
+    ;; validate
+    (ok (not (null ls2)))
+    (ok (eql (reddit.view-defs:like-userid ls2) 1001))
+    (ok (eql (reddit.view-defs:like-articleid ls2) 2001))
+    (ok (not (reddit.view-defs:like-like ls2)))
+    (ok (eq lsu2 :dislike)))
+
+
+  (testing "unlike-site"
+    ;; prepare
+
+    ;; do
+    (reddit.data::unlike-site 1001 2001)
+    (setf ls3 (reddit.data::get-like-site 1001 2001))
+    (setf lsu3 (reddit.data::like-site-user 1001 2001))
+
+    ;; validate
+    (ok (null ls3))
+    (ok (null lsu3))))
+
+(deftest like-and-mod
+  (testing "like-and-mod"
+    ;; prepare
+    (add-user "tamu10" "tamu10@example.com" "password10" "127.0.0.1")
+    (let ((user10 (reddit.data::get-user "tamu10")))
+      (setf (slot-value user10 'reddit.view-defs::karma) 20)
+      (clsql:update-records-from-instance user10))
+
+    (add-user "tamu11" "tamu11@example.com" "password11" "127.0.0.1")
+    (insert-article "domestic news"
+                    "https://news.yahoo.co.jp/categories/domestic"
+                    (valid-user-p "tamu11")
+                    "127.0.0.1")
+
+    ;; do
+    (reddit.data::like-and-mod (valid-user-p "tamu10")
+                               (reddit.data::article-id-from-url "https://news.yahoo.co.jp/categories/domestic")
+                               T
+                               "192.168.110.001")
+    (setf lam1 (reddit.data::get-like-site (valid-user-p "tamu10")
+                                           (reddit.data::article-id-from-url "https://news.yahoo.co.jp/categories/domestic")))
+
+    ;; validate
+    (ok (not (null lam1)))
+    (ok (not (null (reddit.data::get-mod-article (valid-user-p "tamu10")
+                                                 (reddit.data::article-id-from-url "https://news.yahoo.co.jp/categories/domestic")))))
+    (ok (not (null (reddit.data::get-mod-user (valid-user-p "tamu10")
+                                              (valid-user-p "tamu11")
+                                              (reddit.data::article-id-from-url "https://news.yahoo.co.jp/categories/domestic")))))))
+
+(deftest unlike-and-mod
+  (testing "unlik-and-mod"
+    ;; prepare
+    (ok (eql (car (clsql:query "select count(*) from mod_user where ip = '192.168.110.001'" :flatp T :field-names NIL)) 1))
+    (ok (eql (car (clsql:query "select count(*) from mod_article where ip = '192.168.110.001'" :flatp T :field-names NIL)) 1))
+    (ok (eql (car (clsql:query "select count(*) from mod_user where ip = '192.168.110.002'" :flatp T :field-names NIL)) 0))
+    (ok (eql (car (clsql:query "select count(*) from mod_article where ip = '192.168.110.002'" :flatp T :field-names NIL)) 0))
+
+    ;; do
+    (reddit.data::unlike-and-mod (valid-user-p "tamu10")
+                                 (reddit.data::article-id-from-url "https://news.yahoo.co.jp/categories/domestic")
+                                 "192.168.110.002")
+    (setf uam1 (reddit.data::get-like-site (valid-user-p "tamu10")
+                                           (reddit.data::article-id-from-url "https://news.yahoo.co.jp/categories/domestic")))
+
+    ;; validate
+    (ok (null uam1))
+    ;; update ip address from original mod_user
+    (ok (eql (car (clsql:query "select count(*) from mod_user where ip = '192.168.110.001'" :flatp T :field-names NIL)) 0))
+    (ok (eql (car (clsql:query "select count(*) from mod_user where ip = '192.168.110.002'" :flatp T :field-names NIL)) 1))
+    ;; update ip address from original mod_article
+    (ok (eql (car (clsql:query "select count(*) from mod_article where ip = '192.168.110.001'" :flatp T :field-names NIL)) 0))
+    (ok (eql (car (clsql:query "select count(*) from mod_article where ip = '192.168.110.002'" :flatp T :field-names NIL)) 1))))
+
+
+
+
+(deftest alias
+  (testing "alias"
+    ;;
+    (reddit.data::set-alias 1001 "a-username" "a-value")
+    (ok (not (null (reddit.data::get-alias 1001 "a-username"))))
+
+    (reddit.data::remove-alias 1001 "a-username")
+    (ok (null (reddit.data::get-alias 1001 "a-username")))))
 
