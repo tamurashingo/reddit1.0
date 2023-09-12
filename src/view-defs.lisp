@@ -77,7 +77,7 @@
            :neuter-ip
            :options
            :options-userid
-           :options-nnumsittes
+           :options-numsites
            :options-promoted
            :options-demoted
            :options-visible
@@ -288,7 +288,7 @@
     :initarg :userid
     :accessor neuter-userid)
    (ip
-    :type :string
+    :type string
     :initarg :ip
     :accessor neuter-ip))
   (:base-table neuter))

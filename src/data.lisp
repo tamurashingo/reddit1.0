@@ -88,7 +88,7 @@
         (or (not ,articleid) (get-article ,articleid))
         (or (not ,ip) (not (neuterd ,ip)))
         (progn ,@body)))
-            
+
 ;;--------------------------- users ----------------------------
 (defun user-pass (sn)
   (car (select [password] :from [users] :where [= sn [screenname]] :flatp t)))
@@ -213,18 +213,18 @@
   (typecase id-or-ip
     (string (car (select 'reddit.view-defs:neuter :where [= id-or-ip [ip]] :flatp t)))
     (integer (car (select 'reddit.view-defs:neuter :where [= id-or-ip [userid]] :flatp t)))))
-  
+
 ;;------------------------- options ----------------------------
 (defun get-user-options (userid)
-  (or (car (select 'options :where [= userid [userid]] :flatp t))
-      (make-instance 'options :userid userid :promoted t :demoted nil :numsites 25 :visible nil :frame nil)))
+  (or (car (select 'reddit.view-defs:options :where [= userid [userid]] :flatp t))
+      (make-instance 'reddit.view-defs:options :userid userid :promoted t :demoted nil :numsites 25 :visible nil :frame nil)))
 
 (defun profile-visible (userid)
   (options-visible (get-user-options userid)))
 
 ;;---------------------------- sessions ------------------------------
 (defun session-uid (iden)
-  (car (select [userid] :from [sessions] :where [= iden [iden]] :flatp t )))    
+  (car (select [userid] :from [sessions] :where [= iden [iden]] :flatp t )))
 
 (defun remember-session-sql (id iden &optional ip)
   "Erase an old session for this userid, and add a new one"
@@ -246,17 +246,17 @@
          (> (or (user-karma (get-user userid)) 0)
             *min-karma*)
          (mod-user userid (article-submitterid article) articleid ip amount))))
-         
+
 (defun get-mod-user (userid targetid articleid)
-  (car (select 'moduser :where [and [= [userid] userid]
-                                    [= [target] targetid]
-                                    [= [article] articleid]]
+  (car (select 'reddit.view-defs:moduser :where [and [= [userid] userid]
+                                                     [= [target] targetid]
+                                                     [= [article] articleid]]
                :flatp t)))
 
 (defun mod-user (userid targetid articleid ip amount)
   (when (and userid targetid articleid ip amount)
     (let ((moduser (or (get-mod-user userid targetid articleid )
-                       (make-instance 'moduser :userid userid :targetid targetid :articleid articleid))))
+                       (make-instance 'reddit.view-defs:moduser :userid userid :targetid targetid :articleid articleid))))
       (log-message :INFO "MOD-USER: userid: ~a target: ~a article: ~a ip: ~a amount: ~a"
                     userid targetid articleid ip amount)
       (setf (moduser-amount moduser) amount
@@ -267,15 +267,15 @@
 
 ;;--------------------------- mod-article -----------------------------
 (defun ip-modded-site (ip articleid)
-  (car (select 'modarticle :where [and [= ip [ip]] [= articleid [article]]] :flatp t)))
+  (car (select 'reddit.view-defs:modarticle :where [and [= ip [ip]] [= articleid [article]]] :flatp t)))
 
 (defun check-and-mod-article (userid articleid ip amount)
   (mod-article userid articleid ip amount))
 
 (defun get-mod-article (userid articleid)
   (car (select 'reddit.view-defs:modarticle :where [and [= [userid] userid]
-                                       [= [article] articleid]]
-               :flatp t)))
+                                                        [= [article] articleid]]
+                                            :flatp t)))
 
 (defun mod-article (userid articleid ip amount)
   (and userid articleid ip amount
@@ -292,7 +292,7 @@
 (defun view-link (userid articleid ip)
   (and articleid ip
        (when-valid (:userid userid :articleid articleid :ip ip)
-         (let ((click (make-instance 'click :userid userid :articleid articleid :ip ip)))
+         (let ((click (make-instance 'reddit.view-defs:click :userid userid :articleid articleid :ip ip)))
            (log-message :INFO "CLICK user: ~a article: ~a ip: ~a" userid articleid ip)
            (update-records-from-instance click)))))
 
@@ -303,7 +303,7 @@
                      :where [and [= userid [userid]]
                                  [= articleid [article]]]
                      :limit 1))))
-      
+
 ;;--------------------------- like-site ---------------------------
 (defun get-like-site (userid articleid)
   (car (select 'reddit.view-defs:like :where [and [= userid [userid]] [= articleid [article]]] :flatp t)))
@@ -343,12 +343,12 @@
 
 ;;-------------------------- aliases -------------------------------
 (defun get-alias (userid name)
-  (car (select 'alias :where [and [= [userid] userid] [= name [name]]] :flatp t)))
+  (car (select 'reddit.view-defs:alias :where [and [= [userid] userid] [= name [name]]] :flatp t)))
 
 (defun set-alias (userid name val)
   (and userid (> (length name) 0) (> (length val) 0)
        (let ((alias (or (get-alias userid name)
-                        (make-instance 'alias :userid userid))))
+                        (make-instance 'reddit.view-defs:alias :userid userid))))
          (setf (alias-name alias) name
                (alias-val alias) val)
          (update-records-from-instance alias))))
@@ -357,7 +357,8 @@
   (and userid name
        (when-bind (alias (get-alias userid name))
          (delete-instance-records alias))))
-       
+
+;;-------------------------- user info -------------------------------
 (defun basic-info (sn)
   (car (select [karma] [signupdate]
                :from [users]
@@ -369,17 +370,17 @@
     (list
      (car (select [count [id]] :from [articles]
                   :where [= [submitter] id]
-                  :flatp t 
+                  :flatp t
                   :result-types '(t)))
      (car (select [count [article]] :from [like_site]
                   :where [and [= id [userid]]
                               [= [liked] [true]]]
-                  :flatp t 
+                  :flatp t
                   :result-types '(t)))
      (car (select [count [article]] :from [like_site]
                   :where [and [= id [userid]]
                               [= [liked] [false]]]
-                  :flatp t 
+                  :flatp t
                   :result-types '(t))))))
 
 (defun user-email (name-or-id)
@@ -392,7 +393,7 @@
                     :av-pairs `((password ,newpass))
                     :where [= [id] id])
                     t))
-      
+
 (defun user-from-email (email)
   (car (select [id] :from [users]
                :where [= (string-downcase email) [lower [email]]]
@@ -406,11 +407,11 @@
                       )))
 
 (defun karma (id)
-  (or 
+  (or
    (car (select [karma] :from [users] :where [= id [id]] :flatp t  :result-types '(:int)
                 ))
    0))
-  
+
 
 (defun login-from-email (email)
   (car (select [screenname] [password]
@@ -437,15 +438,16 @@
               :order-by `((,[karma] desc))
               :limit num)))
 
-  
+;;-------------------------- unknown tables -------------------------------
+
 (defun valid-email (userid ip dest)
   (and userid ip dest
        (< (car (select [count [userid]] :from [emails]
-                       :where [and [or [= userid [userid]]
-                                       [= ip [ip]]]
-                                   [> [date] [- [current_timestamp]
-                                                (sql-expression :string "interval '1 day'")]]]
-                       :flatp t ))
+                                        :where [and [or [= userid [userid]]
+                                        [= ip [ip]]]
+                                        [> [date] [- [current_timestamp]
+                                        (sql-expression :string "interval '1 day'")]]]
+                                        :flatp t ))
           *max-emails*)))
 
 (defun email-sent (userid articleid ip dest)
@@ -456,9 +458,6 @@
                               (dest ,dest)
                               (date ,[current_timestamp]))
                   ))
-
-
-                     
 
 (defun get-all (userid)
   (mapcar #'length
