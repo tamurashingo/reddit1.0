@@ -76,7 +76,7 @@
   (dex:get url))
 
 (defun website-title (url)
-  (log-message "downloading title for ~a" url)
+  (log-message :INFO "downloading title for ~a" url)
   (ignore-errors
     (register-groups-bind (title) (*title* (website-string url))
       (remove #\Newline (remove #\Return title)))))
