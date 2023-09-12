@@ -13,7 +13,8 @@
   :pathname "test"
   :components ((:file "config-test")
                (:file "memcached-test")
-               (:file "data-test"))
+               (:file "data-test")
+			   (:file "util-test"))
   :perform (test-op (o c)
                     (uiop:symbol-call :reddit.config :set-test-config)
                     (uiop:symbol-call :rove :run c)))
