@@ -531,3 +531,134 @@
     (reddit.data::remove-alias 1001 "a-username")
     (ok (null (reddit.data::get-alias 1001 "a-username")))))
 
+
+(deftest basic-info
+  (testing "karma zero user"
+    ;; prepare
+    (add-user "tamu12" "tamu12@example.com" "password12" "127.0.0.1")
+
+    ;; do
+    (setf info1 (reddit.data::basic-info "tamu12"))
+
+    ;; validate
+    (ok (not (null info1)))
+    (ok (string= (car info1) "0")))
+
+  (testing "karma 10 user"
+    ;; prepare
+    (add-user "tamu13" "tamu13@example.com" "password13" "127.0.0.1")
+    (let ((user13 (reddit.data::get-user "tamu13")))
+      (setf (slot-value user13 'reddit.view-defs::karma) 10)
+      (clsql:update-records-from-instance user13))
+
+
+    ;; do
+    (setf info2 (reddit.data::basic-info "tamu13"))
+
+    ;; validate
+    (ok (not (null info2)))
+    (ok (string= (car info2) "10"))))
+
+
+(deftest user-stats
+  (testing "user just after register"
+     ;; prepare
+     (add-user "tamu14" "tamu14@example.com" "password14" "127.0.0.1")
+
+     ;; do
+     (setf stat1 (reddit.data::user-stats "tamu14"))
+
+     ;; validate
+     (ok (not (null stat1)))
+     (ok (equal stat1 '("0" "0" "0"))))
+
+  (testing "user article 3 like 2 dislike 1"
+     ;; prepare
+     (add-user "tamu15" "tamu15@example.com" "password15" "127.0.0.1")
+     (insert-article "search a"
+                     "https://www.google.com/search?q=a"
+                     (valid-user-p "tamu15")
+                     "127.0.0.1")
+     (insert-article "search b"
+                     "https://www.google.com/search?q=b"
+                     (valid-user-p "tamu15")
+                     "127.0.0.1")
+     (insert-article "search c"
+                     "https://www.google.com/search?q=c"
+                     (valid-user-p "tamu15")
+                     "127.0.0.1")
+     (reddit.data::like-site (valid-user-p "tamu15")
+                             (reddit.data::article-id-from-url "https://www.google.com/search?q=c")
+                             NIL)
+
+     ;; do
+     (setf stat2 (reddit.data::user-stats "tamu15"))
+
+     ;; validate
+     (ok (not (null stat2)))
+     (ok (equal stat2 '("3" "2" "1")))))
+
+
+(deftest user-email
+  (testing "valid user"
+    (ok (string= (reddit.data::user-email "tamu15") "tamu15@example.com")))
+
+  (testing "invalid user"
+    (ok (null (reddit.data::user-email "tamu16")))))
+
+(deftest change-password
+  (testing "old password correct"
+    (ok (not (null (reddit.data::change-password (valid-user-p "tamu15")
+                                                 "password15"
+                                                 "p@ssw0rd15")))))
+  (testing "old password incorrect"
+    (ok (null (reddit.data::change-password (valid-user-p "tamu15")
+                                            "12345678"
+                                            "qwertyui")))))
+
+(deftest user-from-email
+  (testing "valid user"
+    (ok (eql (reddit.data::user-from-email "tamu15@example.com") (valid-user-p "tamu15"))))
+
+  (testing "invalid user"
+    (ok (null (reddit.data::user-from-email "tamu16@example.com")))))
+
+
+(deftest change-email
+  (testing "valid user"
+    (reddit.data::change-email (valid-user-p "tamu15") "tamu15@example.co.jp")
+    (ok (eql (reddit.data::user-from-email "tamu15@example.co.jp") (valid-user-p "tamu15"))))
+
+  (testing "invalid user"
+    (reddit.data::change-email 10001 "tamu16@example.co.jp")
+    (ok (null (reddit.data::user-from-email "tamu16@example.co.jp")))))
+
+(deftest karma
+  (testing "no registered user"
+    (ok (eql (reddit.data::karma 10001) 0)))
+
+  (testing "user just after registered"
+    (add-user "tamu16" "tamu16@example.com" "password16" "127.0.0.1")
+    (ok (eql (reddit.data::karma (valid-user-p "tamu16")) 0)))
+
+  (testing "karma 10 user"
+    (let ((user16 (reddit.data::get-user "tamu16")))
+      (setf (slot-value user16 'reddit.view-defs::karma) 10)
+      (clsql:update-records-from-instance user16))
+    (ok (eql (reddit.data::karma (valid-user-p "tamu16")) 10))))
+
+
+(deftest login-from-email
+  (testing "valid user"
+    (ok (equal (reddit.data::login-from-email "tamu16@example.com") '("tamu16" "password16"))))
+
+  (testing "invalid user"
+    (ok (null (reddit.data::login-from-email "tamu17@example.com")))))
+
+
+(deftest top-submitters
+  (testing "just run"
+    (reddit.data::top-submitters 20 :day)
+    (reddit.data::top-submitters 20 :week)
+    (reddit.data::top-submitters 20 NIL)))
+

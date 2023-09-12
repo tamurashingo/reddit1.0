@@ -88,7 +88,7 @@
         (or (not ,articleid) (get-article ,articleid))
         (or (not ,ip) (not (neuterd ,ip)))
         (progn ,@body)))
-            
+
 ;;--------------------------- users ----------------------------
 (defun user-pass (sn)
   (car (select [password] :from [users] :where [= sn [screenname]] :flatp t)))
@@ -213,7 +213,7 @@
   (typecase id-or-ip
     (string (car (select 'reddit.view-defs:neuter :where [= id-or-ip [ip]] :flatp t)))
     (integer (car (select 'reddit.view-defs:neuter :where [= id-or-ip [userid]] :flatp t)))))
-  
+
 ;;------------------------- options ----------------------------
 (defun get-user-options (userid)
   (or (car (select 'reddit.view-defs:options :where [= userid [userid]] :flatp t))
@@ -224,7 +224,7 @@
 
 ;;---------------------------- sessions ------------------------------
 (defun session-uid (iden)
-  (car (select [userid] :from [sessions] :where [= iden [iden]] :flatp t )))    
+  (car (select [userid] :from [sessions] :where [= iden [iden]] :flatp t )))
 
 (defun remember-session-sql (id iden &optional ip)
   "Erase an old session for this userid, and add a new one"
@@ -246,7 +246,7 @@
          (> (or (user-karma (get-user userid)) 0)
             *min-karma*)
          (mod-user userid (article-submitterid article) articleid ip amount))))
-         
+
 (defun get-mod-user (userid targetid articleid)
   (car (select 'reddit.view-defs:moduser :where [and [= [userid] userid]
                                                      [= [target] targetid]
@@ -303,7 +303,7 @@
                      :where [and [= userid [userid]]
                                  [= articleid [article]]]
                      :limit 1))))
-      
+
 ;;--------------------------- like-site ---------------------------
 (defun get-like-site (userid articleid)
   (car (select 'reddit.view-defs:like :where [and [= userid [userid]] [= articleid [article]]] :flatp t)))
@@ -357,7 +357,8 @@
   (and userid name
        (when-bind (alias (get-alias userid name))
          (delete-instance-records alias))))
-       
+
+;;-------------------------- user info -------------------------------
 (defun basic-info (sn)
   (car (select [karma] [signupdate]
                :from [users]
@@ -369,17 +370,17 @@
     (list
      (car (select [count [id]] :from [articles]
                   :where [= [submitter] id]
-                  :flatp t 
+                  :flatp t
                   :result-types '(t)))
      (car (select [count [article]] :from [like_site]
                   :where [and [= id [userid]]
                               [= [liked] [true]]]
-                  :flatp t 
+                  :flatp t
                   :result-types '(t)))
      (car (select [count [article]] :from [like_site]
                   :where [and [= id [userid]]
                               [= [liked] [false]]]
-                  :flatp t 
+                  :flatp t
                   :result-types '(t))))))
 
 (defun user-email (name-or-id)
@@ -392,7 +393,7 @@
                     :av-pairs `((password ,newpass))
                     :where [= [id] id])
                     t))
-      
+
 (defun user-from-email (email)
   (car (select [id] :from [users]
                :where [= (string-downcase email) [lower [email]]]
@@ -406,11 +407,11 @@
                       )))
 
 (defun karma (id)
-  (or 
+  (or
    (car (select [karma] :from [users] :where [= id [id]] :flatp t  :result-types '(:int)
                 ))
    0))
-  
+
 
 (defun login-from-email (email)
   (car (select [screenname] [password]
@@ -437,15 +438,16 @@
               :order-by `((,[karma] desc))
               :limit num)))
 
-  
+;;-------------------------- unknown tables -------------------------------
+
 (defun valid-email (userid ip dest)
   (and userid ip dest
        (< (car (select [count [userid]] :from [emails]
-                       :where [and [or [= userid [userid]]
-                                       [= ip [ip]]]
-                                   [> [date] [- [current_timestamp]
-                                                (sql-expression :string "interval '1 day'")]]]
-                       :flatp t ))
+                                        :where [and [or [= userid [userid]]
+                                        [= ip [ip]]]
+                                        [> [date] [- [current_timestamp]
+                                        (sql-expression :string "interval '1 day'")]]]
+                                        :flatp t ))
           *max-emails*)))
 
 (defun email-sent (userid articleid ip dest)
@@ -456,9 +458,6 @@
                               (dest ,dest)
                               (date ,[current_timestamp]))
                   ))
-
-
-                     
 
 (defun get-all (userid)
   (mapcar #'length
