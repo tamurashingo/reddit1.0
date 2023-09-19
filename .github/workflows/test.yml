@@ -42,12 +42,13 @@ jobs:
       - name: Install roswell
         run: |
           curl -L https://raw.githubusercontent.com/roswell/roswell/v22.12.14.113/scripts/install-for-ci.sh | sh
-          ros install fukamachi/rove
+          ros install rove qlot
           export PATH=$HOME/.roswell/bin:$PATH
         env:
           LISP: ${{ matrix.lisp }}
       - name: build
         run: |
+          qlot install
           ros install ${{ matrix.lisp }}
           ros use ${{ matrix.lisp }}
           ros run -e '(ql:quickload :reddit)' -e '(ql:quickload :reddit-db)'
