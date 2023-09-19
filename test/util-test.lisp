@@ -122,3 +122,80 @@
   (ok (eql (reddit.util::days 172800) 2))
   (ok (eql (reddit.util::days 172801) 2)))
 
+(deftest age-str
+  (cl-package-locks:with-packages-unlocked (cl)
+    (let ((old (symbol-function 'get-universal-time)))
+      (setf (symbol-function 'get-universal-time)
+            #'(lambda () 3900000000))
+
+      (testing "diff 0 sec"
+        (ok (string= (age-str (clsql:make-time :year 2023 :month 8 :day 2
+                                               :hour 21 :minute 20 :second 0))
+                     "0 minutes")))
+
+      (testing "diff 1 sec"
+        (ok (string= (age-str (clsql:make-time :year 2023 :month 8 :day 2
+                                               :hour 21 :minute 19 :second 59))
+                     "0 minutes")))
+
+
+      (testing "diff 60 sec"
+        (ok (string= (age-str (clsql:make-time :year 2023 :month 8 :day 2
+                                               :hour 21 :minute 19 :second 0))
+                     "1 minute")))
+
+      (testing "diff 61 sec"
+        (ok (string= (age-str (clsql:make-time :year 2023 :month 8 :day 2
+                                               :hour 21 :minute 18 :second 59))
+                     "1 minute")))
+
+      (testing "diff 119 sec"
+        (ok (string= (age-str (clsql:make-time :year 2023 :month 8 :day 2
+                                               :hour 21 :minute 18 :second 1))
+                     "1 minute")))
+
+      (testing "diff 120 sec"
+        (ok (string= (age-str (clsql:make-time :year 2023 :month 8 :day 2
+                                               :hour 21 :minute 18 :second 0))
+                     "2 minutes")))
+
+      (testing "diff 3600 sec"
+        (ok (string= (age-str (clsql:make-time :year 2023 :month 8 :day 2
+                                               :hour 20 :minute 20 :second 0))
+                     "60 minutes")))
+
+      (testing "diff 7198 sec"
+        (ok (string= (age-str (clsql:make-time :year 2023 :month 8 :day 2
+                                               :hour 19 :minute 20 :second 2))
+                     "119 minutes")))
+
+      (testing "diff 7199 sec"
+        (ok (string= (age-str (clsql:make-time :year 2023 :month 8 :day 2
+                                               :hour 19 :minute 20 :second 1))
+                     "1 hour")))
+
+
+      (testing "diff 7200 sec"
+        (ok (string= (age-str (clsql:make-time :year 2023 :month 8 :day 2
+                                               :hour 19 :minute 20 :second 0))
+                     "2 hours")))
+
+      (testing "diff 86399 sec"
+        (ok (string= (age-str (clsql:make-time :year 2023 :month 8 :day 1
+                                               :hour 21 :minute 20 :second 1))
+                     "23 hours")))
+
+      (testing "diff 86400 sec"
+        (ok (string= (age-str (clsql:make-time :year 2023 :month 8 :day 1
+                                               :hour 21 :minute 20 :second 0))
+                     "1 day")))
+
+      (testing "diff 172800 sec"
+        (ok (string= (age-str (clsql:make-time :year 2023 :month 7 :day 31
+                                               :hour 21 :minute 20 :second 0))
+                     "2 days")))
+
+      (setf (symbol-function 'get-universaltime)
+              old))))
+
+
