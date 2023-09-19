@@ -28,6 +28,9 @@ jobs:
           - sbcl-bin
     steps:
       - uses: actions/checkout@v3
+      - name: before cache
+        run: |
+          mkdir -p ~/.qlot
       - name: Cache qlot directory
         uses: actions/cache@v1
         with:
