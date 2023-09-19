@@ -1,6 +1,7 @@
 FROM fukamachi/sbcl
 
 RUN apt-get update && apt-get install -y libpq-dev
+RUN ros install qlot rove
 
 RUN mkdir /reddit
 WORKDIR /reddit

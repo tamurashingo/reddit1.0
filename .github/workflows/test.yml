@@ -28,6 +28,13 @@ jobs:
           - sbcl-bin
     steps:
       - uses: actions/checkout@v3
+      - name: Cache qlot directory
+        uses: actions/cache@v1
+        with:
+          path: .qlot
+          key: qlot-${{ qlfile.lock }}
+          restore-keys: |
+            qlot-
       - uses: niden/actions-memcached@v7
       - name: Install roswell
         run: |
