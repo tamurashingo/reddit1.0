@@ -51,7 +51,7 @@ jobs:
           qlot install
           ros install ${{ matrix.lisp }}
           ros use ${{ matrix.lisp }}
-          ros run -e '(ql:quickload :reddit)' -e '(ql:quickload :reddit-db)'
+          qlot exec ros run -e '(ql:quickload :reddit)' -e '(ql:quickload :reddit-db)'
         env:
           CL_SOURCE_REGISTRY: ${{ github.workspace }}
       - name: Run test
