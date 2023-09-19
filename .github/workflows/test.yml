@@ -32,7 +32,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: .qlot
-          key: qlot-${{ qlfile.lock }}
+          key: qlot-${{ hashFiles('qlfile.lock') }}
           restore-keys: |
             qlot-
       - uses: niden/actions-memcached@v7
