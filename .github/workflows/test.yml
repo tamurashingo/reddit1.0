@@ -58,7 +58,8 @@ jobs:
         run: |
           export PATH=$HOME/.roswell/bin:$PATH
           ros use ${{ matrix.lisp }}
-          rove reddit-test.asd
+          # rove reddit-test.asd
+          qlot exec ros run -e "(ql:quickload :reddit)" -e "(ql:quickload :reddit-db)" -e "(ql:quickload :reddit-test)" -e "(asdf:test-system :reddit-test)"
         env:
           CL_SOURCE_REGISTRY: ${{ github.workspace }}
           REDDIT_DATABASE_DATABASE: "reddit_test"
