@@ -28,26 +28,38 @@ jobs:
           - sbcl-bin
     steps:
       - uses: actions/checkout@v3
+      - name: before cache
+        run: |
+          mkdir -p ${{ gitHub.workspace }}/.qlot
+      - name: Cache qlot directory
+        uses: actions/cache@v3
+        with:
+          path: .qlot
+          key: qlot-${{ hashFiles('qlfile.lock') }}
+          restore-keys: |
+            qlot-
       - uses: niden/actions-memcached@v7
       - name: Install roswell
         run: |
           curl -L https://raw.githubusercontent.com/roswell/roswell/v22.12.14.113/scripts/install-for-ci.sh | sh
-          ros install fukamachi/rove
-          export PATH=$HOME/.roswell/bin:$PATH
+          ros install rove qlot
         env:
           LISP: ${{ matrix.lisp }}
       - name: build
         run: |
+          export PATH=$HOME/.roswell/bin:$PATH
+          qlot install
           ros install ${{ matrix.lisp }}
           ros use ${{ matrix.lisp }}
-          ros run -e '(ql:quickload :reddit)' -e '(ql:quickload :reddit-db)'
+          qlot exec ros run -e '(ql:quickload :reddit)' -e '(ql:quickload :reddit-db)'
         env:
           CL_SOURCE_REGISTRY: ${{ github.workspace }}
       - name: Run test
         run: |
           export PATH=$HOME/.roswell/bin:$PATH
           ros use ${{ matrix.lisp }}
-          rove reddit-test.asd
+          # rove reddit-test.asd
+          qlot exec ros run -e "(ql:quickload :reddit)" -e "(ql:quickload :reddit-db)" -e "(ql:quickload :reddit-test)" -e "(asdf:test-system :reddit-test)"
         env:
           CL_SOURCE_REGISTRY: ${{ github.workspace }}
           REDDIT_DATABASE_DATABASE: "reddit_test"
