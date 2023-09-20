@@ -111,7 +111,6 @@
   (ok (eql (reddit.util::hours 7200) 2))
   (ok (eql (reddit.util::hours 7201) 2)))
 
-
 (deftest days
   (ok (eql (reddit.util::days 0) 0))
   (ok (eql (reddit.util::days 1) 0))
@@ -121,6 +120,7 @@
   (ok (eql (reddit.util::days 172799) 1))
   (ok (eql (reddit.util::days 172800) 2))
   (ok (eql (reddit.util::days 172801) 2)))
+
 
 (deftest age-str
   (cl-package-locks:with-packages-unlocked (cl)
@@ -137,7 +137,6 @@
         (ok (string= (age-str (clsql:make-time :year 2023 :month 8 :day 2
                                                :hour 21 :minute 19 :second 59))
                      "0 minutes")))
-
 
       (testing "diff 60 sec"
         (ok (string= (age-str (clsql:make-time :year 2023 :month 8 :day 2
@@ -174,7 +173,6 @@
                                                :hour 19 :minute 20 :second 1))
                      "1 hour")))
 
-
       (testing "diff 7200 sec"
         (ok (string= (age-str (clsql:make-time :year 2023 :month 8 :day 2
                                                :hour 19 :minute 20 :second 0))
@@ -198,4 +196,105 @@
       (setf (symbol-function 'get-universaltime)
               old))))
 
+
+(deftest sanitize
+  (testing "int"
+    (ok (null (sanitize "" 'int)))
+    (ok (eql (sanitize "10" 'int) 10))
+    (ok (eql (sanitize "10.1" 'int) 10))
+    (ok (eql (sanitize "100page" 'int) 100))
+
+    (ok (eql (sanitize "10" 'int '(20 30 40)) 10)))
+
+  (testing "string"
+    (ok (string= (sanitize "" 'string) ""))
+    (ok (string= (sanitize "param" 'string) "param"))
+    (ok (string= (sanitize "param2" 'string '("param1" "param2" "param3")) "param2"))
+    (ok (null (sanitize "param4" 'string '("param1" "param2" "param3")))))
+
+  (testing "sym"
+    (ok (eql (sanitize "" 'sym) :||))
+    (ok (eql (sanitize "param" 'sym) :PARAM))
+    (ok (eql (sanitize "param2" 'sym '(:PARAM1 :PARAM2 :PARAM3)) :PARAM2))
+    (ok (null (sanitize "param4" 'sym '(:PARAM1 :PARAM2 :PARAM3))))))
+
+
+(deftest add-rlist
+  (pass "add-rlist is not used"))
+
+
+(deftest decode-user-url
+  (ok (equal (multiple-value-list (decode-user-url "/user/tamu/"))
+             '("tamu" "")))
+  (ok (equal (multiple-value-list (decode-user-url "/user/tamu/basic"))
+             '("tamu" "basic")))
+
+  (ok (equal (multiple-value-list (decode-user-url "/blog/latest"))
+             '(NIL))))
+
+
+(deftest 2weeks
+  (skip "2weeks = 60sec * 60min * 24hour * 7day * 2week -> 1,209,600"))
+
+(deftest -2weeks
+  (skip "2weeks = 60sec * 60min * 24hour * 7day * 2week -> 1,209,600"))
+
+(deftest 5minutes
+  (skip "5minutes = 60sec * 5min -> 300"))
+
+(deftest set-cookie-list
+  (skip "can't test"))
+
+(deftest add-to-cookie-list
+  (skip "can't test"))
+
+(deftest get-cookie-list
+  (skip "can't test"))
+
+(deftest good-nytimes-p
+  (skip "nytimes changed"))
+
+(deftest nytimes-link-p
+  (skip "nytimes changed"))
+
+(deftest good-nytimes
+  (skip "nytimes changed"))
+
+(deftest nytimes-safe-url
+  (skip "nytimes changed"))
+
+
+(deftest base-url
+  (testing "https://www.google.com without last '/'"
+    (ok (string= (base-url "https://www.google.com")
+                 "google.com")))
+
+  (testing "https://www.google.com/ with last '/'"
+    (ok (string= (base-url "https://www.google.com/")
+                 "google.com")))
+
+  (testing "https://subdomain.example.com/ without www"
+    (ok (string= (base-url "https://subdomain.example.com")
+                 "subdomain.example.com")))
+
+  (testing "https://subdomain.example.com without www and last '/'"
+    (ok (string= (base-url "https://subdomain.example.com/")
+                 "subdomain.example.com")))
+
+  (testing "https://www.subsub.sub.example.com"
+    (ok (string= (base-url "https://www.subsub.sub.example.com")
+                 "subsub.sub.example.com"))))
+
+(deftest add-http
+  (skip "http:// deprecated, use add-https"))
+
+(deftest add-https
+  (testing "http, https exists"
+    (ok (string= (add-https "http://example.com")
+                 "http://example.com"))
+    (ok (string= (add-https "https://example.com")
+                 "https://example.com")))
+  (testing "http, https not exists"
+    (ok (string= (add-https "example.com")
+                 "https://example.com"))))
 

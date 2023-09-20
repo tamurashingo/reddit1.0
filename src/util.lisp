@@ -56,13 +56,17 @@
            :nytimes-safe-url
            :base-url
            :add-http
+           :add-https
            :makestr
            :key-str
            :esc-quote
            :shorten-str
            :when-bind
            :when-bind*
-           :with-parameters))
+           :with-parameters
+           :int
+           :string
+           :sym))
 (in-package :reddit.util)
 
 
@@ -210,10 +214,17 @@
           burl))))
 
 (defun add-http (url)
-  "Add http:// to a url if http:// or https:// isn't already present."
+  "DEPRECATED: Add http:// to a url if http:// or https:// isn't already present."
   (or (and (mismatch "http://" url :end2 7)
            (mismatch "https://" url :end2 8)
            (concatenate 'string "http://" url))
+      url))
+
+(defun add-https (url)
+  "Add https:// to a url if http:// or https:// isn't already present."
+  (or (and (mismatch "http://" url :end2 7)
+           (mismatch "https://" url :end2 8)
+           (concatenate 'string "https://" url))
       url))
 
 (defun makestr (&rest args)
