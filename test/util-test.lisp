@@ -298,3 +298,69 @@
     (ok (string= (add-https "example.com")
                  "https://example.com"))))
 
+(deftest makestr
+  (ok (string= (makestr)
+               ""))
+  (ok (string= (makestr "a")
+               "a"))
+  (ok (string= (let ((id 3))
+                 (makestr "id=" id))
+               "id=3")))
+
+(deftest key-str
+  (ok (string= (key-str)
+               ""))
+  (ok (string= (key-str "key")
+               "key"))
+  (ok (string= (key-str "key" "012")
+               "key-012"))
+  (ok (string= (key-str "this key" "234" "567")
+               "this_key-234-567")))
+
+(deftest esc-quote
+  (ok (string= (esc-quote "this is a pen")
+               "this is a pen"))
+  (ok (string= (esc-quote "I say 'this is a pen'")
+               "I say &#039;this is a pen&#039;")))
+
+(deftest shorten-str
+  (testing "string > length"
+    (ok (string= (shorten-str "this is a pen" 3)
+                 "thi")))
+  (testing "string = length"
+    (ok (string= (shorten-str "this is a pen" 13)
+                 "this is a pen")))
+  (testing "string < length"
+    (ok (string= (shorten-str "this is a pen" 20)
+                 "this is a pen"))))
+
+
+(deftest when-bind
+  (ok (expands '(when-bind (val 10)
+                 (+ val 20))
+               `(let ((val 10))
+                  (when val
+                    (+ val 20))))))
+
+(deftest when-bind*
+  (testing "when binding result has no NIL, returns evaluated body"
+    (ok (eql (when-bind* ((a 1)
+                         (b (+ a 2))
+                         (c (+ b 3)))
+              (+ a b c))
+             10)))
+  (testing "when binding result has NIL, returns NIL"
+    (ok (null (when-bind* ((a 1)
+                           (b NIL)
+                           (c (+ a 1)))
+                (+ a c))))))
+
+(deftest with-parameters
+  (ok (expands '(with-parameters ((username "username")
+                                  (password "password"))
+                 (login-check username password))
+               `(let ((username (or (hunchentoot:post-parameter "username")
+                                    (hunchentoot:get-parameter "username")))
+                      (password (or (hunchentoot:post-parameter "password")
+                                    (hunchentoot:get-parameter "password"))))
+                  (login-check username password)))))
