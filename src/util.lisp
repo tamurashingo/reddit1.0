@@ -33,10 +33,9 @@
                 :decode-time)
   (:import-from :hunchentoot
                 :cookie-in
-                :log-message*
                 :set-cookie)
-  (:import-from :trivial-http
-                :http-get)
+  (:import-from :reddit.logging
+                :log-message)
   (:export :website-stream
            :website-string
            :website-title
@@ -57,13 +56,17 @@
            :nytimes-safe-url
            :base-url
            :add-http
+           :add-https
            :makestr
            :key-str
            :esc-quote
            :shorten-str
            :when-bind
            :when-bind*
-           :with-parameters))
+           :with-parameters
+           :int
+           :string
+           :sym))
 (in-package :reddit.util)
 
 
@@ -71,19 +74,13 @@
 (defparameter *toplevel* (create-scanner "https?://(?:www.)?([^/]*)"))
 
 (defun website-stream (url) 
-  (third (http-get url)))
+  (dex:get url :want-stream T))
 
 (defun website-string (url)
-  (let ((in (third (http-get url))))
-    (with-output-to-string (s)
-      (when in
-        (loop for line = (read-line in nil)
-           while line do (format s "~a~%" line))
-        (close in))
-      s)))
+  (dex:get url))
 
 (defun website-title (url)
-  (log-message* "downloading title for ~a" url)
+  (log-message :INFO "downloading title for ~a" url)
   (ignore-errors
     (register-groups-bind (title) (*title* (website-string url))
       (remove #\Newline (remove #\Return title)))))
@@ -217,10 +214,17 @@
           burl))))
 
 (defun add-http (url)
-  "Add http:// to a url if http:// or https:// isn't already present."
+  "DEPRECATED: Add http:// to a url if http:// or https:// isn't already present."
   (or (and (mismatch "http://" url :end2 7)
            (mismatch "https://" url :end2 8)
            (concatenate 'string "http://" url))
+      url))
+
+(defun add-https (url)
+  "Add https:// to a url if http:// or https:// isn't already present."
+  (or (and (mismatch "http://" url :end2 7)
+           (mismatch "https://" url :end2 8)
+           (concatenate 'string "https://" url))
       url))
 
 (defun makestr (&rest args)

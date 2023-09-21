@@ -11,7 +11,7 @@
   :depends-on (:hunchentoot
                :bordeaux-threads
                :cl-ppcre
-               :trivial-http
+               :dexador
                :cl-who
                :clsql
                :clsql-postgresql
@@ -31,7 +31,7 @@
                  (:file "web" :depends-on ("autocompute" "cookiehash" "data" "frame" "mail" "memcached" "recommend" "sites" "user-info" "util" "view-defs"))
                  (:file "data" :depends-on ("view-defs" "util" "logging"))
                  (:file "view-defs")
-                 (:file "util")
+                 (:file "util" :depends-on ("logging"))
                  (:file "search")
                  ;;(:file "options" :depends-on ("packages" "data"))
                  (:file "memcached")

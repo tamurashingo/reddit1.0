@@ -1,8 +1,9 @@
 ql hunchentoot
 ql bordeaux-threads
-ql trivial-http
 ql cl-who
 ql clsql
 ql cl-smtp
 ql ironclad
 ql cl-memcached
+ql dexador
+ql cl-package-locks

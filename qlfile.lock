@@ -10,10 +10,6 @@
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
   :version "ql-2023-06-18"))
-("trivial-http" .
- (:class qlot/source/ql:source-ql
-  :initargs (:%version :latest)
-  :version "ql-2023-06-18"))
 ("cl-who" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
@@ -31,6 +27,14 @@
   :initargs (:%version :latest)
   :version "ql-2023-06-18"))
 ("cl-memcached" .
+ (:class qlot/source/ql:source-ql
+  :initargs (:%version :latest)
+  :version "ql-2023-06-18"))
+("dexador" .
+ (:class qlot/source/ql:source-ql
+  :initargs (:%version :latest)
+  :version "ql-2023-06-18"))
+("cl-package-locks" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
   :version "ql-2023-06-18"))
