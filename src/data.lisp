@@ -47,7 +47,9 @@
                 :when-bind)
   (:import-from :reddit.logging
                 :log-message)
-  (:export :add-user
+  (:export :user-pass
+           :get-user
+           :add-user
            :fake-user-p
            :valid-login-p
            :valid-user-p
