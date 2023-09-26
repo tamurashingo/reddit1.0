@@ -35,7 +35,9 @@
                 :makestr
                 :when-bind*)
   (:import-from :reddit.view-defs
-                :user-id))
+                :user-id)
+  (:export :cookie-str
+           :valid-cookie))
 (in-package :reddit.cookiehash)
 
 (defparameter *secret* "blargo")
