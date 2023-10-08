@@ -21,6 +21,14 @@
           (format T "... created~%"))
         (format T "... already exists~%"))))
 
+(defun create-table (table-name description)
+  (format T "create table: ~A" table-name)
+  (if (not (clsql:table-exists-p table-name :owner (database-username)))
+      (progn
+        (clsql:create-table table-name description)
+        (format T "... created~%"))
+      (format T "... already exists~%")))
+
 
 (defun create-sequence (sequence-name)
   (format T "create sequence: ~A~%" sequence-name)
@@ -35,6 +43,11 @@
           (clsql:drop-view-from-class view-class-name :owner (database-username))
           (format T "... dropped~%"))
         (format T "... not found~%"))))
+
+(defun drop-table (table-name)
+  (format T "drop table: ~A" table-name)
+  (clsql:drop-table table-name :if-does-not-exist :ignore)
+  (format T "... dropped~%"))
 
 (defun drop-sequence (sequence-name)
   (format T "drop sequence: ~A~%" sequence-name)
@@ -55,7 +68,11 @@
   (create-table-from-class 'reddit.view-defs:options)
   (create-table-from-class 'reddit.view-defs:alias)
   (create-sequence "userid")
-  (create-sequence "articleid"))
+  (create-sequence "articleid")
+  (create-table 'saved_sites '((userid integer)
+                               (article integer)))
+  (create-table 'closed_sites '((userid integer)
+                                (article integer))))
 
 (defun down ()
   (drop-table-from-class 'reddit.view-defs:alias)
@@ -70,7 +87,9 @@
   (drop-table-from-class 'reddit.view-defs:article)
   (drop-table-from-class 'reddit.view-defs:user)
   (drop-sequence "userid")
-  (drop-sequence "articleid"))
+  (drop-sequence "articleid")
+  (drop-table 'saved_sites)
+  (drop-table 'closed_sites))
 
 (defun rebuild ()
   (down)
