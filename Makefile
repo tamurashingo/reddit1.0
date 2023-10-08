@@ -1,14 +1,23 @@
-.PHONY: setup setup.dev setup.test dev.up dev.down test.up test.down test.run
+.PHONY: setup setup.dev setup.test dev.up dev.down test.up test.down test.run test.console
 
 
 DEV_PROJECT := reddit10-dev
 DEV_NW := reddit10_dev_nw
 
 
+DOCKER_BASE_IMG := reddit10-base
+DOCKER_DEV_IMG := reddit10-dev
+DOCKER_TEST_IMG :-= reddit10-test
+
+
 TEST_PROJECT := reddit10-test
 TEST_NW := reddit10_test_nw
 
-setup: setup.dev setup.test
+setup: setup.docker setup.dev setup.test
+
+setup.docker:
+	docker image build -t $(DOCKER_BASE_IMG) -f Dockerfile.base .
+	docker run --rm -v $(CURDIR):/reddit/ --entrypoint qlot $(DOCKER_BASE_IMG) install
 
 setup.dev:
 	test -z "$$(docker network ls --filter name=$(DEV_NW) --format '{{ .ID }}')"
@@ -45,5 +54,8 @@ test.down:
 	docker-compose -f script/docker/sendmail.test.yml -p $(TEST_PROJECT) down
 	docker-compose -f script/docker/memcached.test.yml -p $(TEST_PROJECT) down
 	docker-compose -f script/docker/postgresql.test.yml -p $(TEST_PROJECT) down
+
+test.console:
+	docker run -it --network $(TEST_NW) --rm -v $(CURDIR):/reddit/ --entrypoint /bin/bash reddit10-test
 
 
