@@ -44,7 +44,9 @@
                 :article-title
                 :article-url
                 :user-karma
-                :user-name))
+                :user-name)
+  (:export :reddit-frame
+           :reddit-toolbar))
 (in-package :reddit.frame)
 
 (defparameter *frame-height* "30px")
@@ -64,7 +66,7 @@
 
 (defun reddit-toolbar ()
   (with-parameters ((id "id"))
-    (let* ((article (get-article (sanitize id 'int)))
+    (let* ((article (get-article (sanitize id 'reddit.util:int)))
            (modded (and (get-info (uid)) (user-liked (get-info (uid)) (article-id article))))
            (id (article-id article)))
       (with-html-output-to-string (*standard-output* nil :prologue t)
@@ -148,3 +150,4 @@
                    (:img :style "cursor: pointer" :src "/static/kill.png"
                          :alt "permanently close this frame" :title "permanently close this frame"
                          :onclick "kill()"))))))))))
+

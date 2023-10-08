@@ -25,13 +25,21 @@
                 :select)
   (:import-from :hunchentoot
                 :*session*
-                :session-value
-                :log-message*)
+                :session-value)
   (:import-from :reddit.data
                 :get-user
-                :get-user-options)
+                :get-user-options
+                :articleid-from-clicks
+                :articleid-from-like-site
+                :name-value-from-alias
+                :articleid-from-saved-sites
+                :articleid-from-closed-sites)
   (:import-from :reddit.util
-                :when-bind))
+                :when-bind)
+  (:import-from :reddit.logging
+                :log-message)
+  (:export :logged-in-p
+           :uid))
 (in-package :reddit.user-info)
  
 (defmacro userinfo (info sym &optional article)
@@ -87,19 +95,19 @@
         (setf user userobj
               options (get-user-options id))
         (loop for articleid in
-             (select [article] :from [saved_sites] :where [= [userid] id] :flatp t) do
+             (articleid-from-saved-sites id) do
              (setf (user-saved info articleid) t))
         (loop for articleid in
-             (select [article] :from [clicks] :where [= [userid] id] :flatp t) do
+             (articleid-from-clicks id) do
              (setf (user-clicked info articleid) t))
         (loop for articleid in
-             (select [article] :from [closed_sites] :where [= [userid] id] :flatp t) do
+             (articleid-from-closed-sites id) do
              (setf (user-closed info articleid) t))
         (loop for (articleid liked) in
-             (select [article] [liked] :from [like_site] :where [= [userid] id] :flatp t) do
+             (articleid-from-like-site id) do
              (setf (user-liked info articleid) (if (string= liked "t") :like :dislike)))
         (loop for (name val) in
-           (select [name] [val] :from [alias] :where [= [userid] id] :flatp t) do
+             (name-value-from-alias id) do
              (setf (user-alias info name) val)))
       info)))
 
@@ -108,7 +116,7 @@
 
 (defun load-info (id)
   (when-bind (info (make-user-info id))
-    (log-message* "LOAD INFO: ~a" id)
+    (log-message :INFO "LOAD INFO: ~a" id)
     (setf (gethash id *user-info*) info)))
 
 (defun get-info (id)
