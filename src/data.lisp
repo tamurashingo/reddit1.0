@@ -54,7 +54,12 @@
            :valid-login-p
            :valid-user-p
            :get-article
-           :insert-article))
+           :insert-article
+           :articleid-from-clicks
+           :articleid-from-like-site
+           :name-value-from-alias
+           :articleid-from-saved-sites
+           :articleid-from-closed-sites))
 (in-package :reddit.data)
 
 
@@ -306,6 +311,9 @@
                                  [= articleid [article]]]
                      :limit 1))))
 
+(defun articleid-from-clicks (userid)
+  (select [article] :from [clicks] :where [= [userid] userid] :flatp t))
+
 ;;--------------------------- like-site ---------------------------
 (defun get-like-site (userid articleid)
   (car (select 'reddit.view-defs:like :where [and [= userid [userid]] [= articleid [article]]] :flatp t)))
@@ -343,6 +351,10 @@
     (check-and-mod-article userid articleid ip 0)
     (check-and-mod-user userid articleid ip 0)))
 
+(defun articleid-from-like-site (userid)
+  (select [article] [liked] :from [like_site] :where [= [userid] userid] :flatp t))
+
+
 ;;-------------------------- aliases -------------------------------
 (defun get-alias (userid name)
   (car (select 'reddit.view-defs:alias :where [and [= [userid] userid] [= name [name]]] :flatp t)))
@@ -359,6 +371,9 @@
   (and userid name
        (when-bind (alias (get-alias userid name))
          (delete-instance-records alias))))
+
+(defun name-value-from-alias (userid)
+  (select [name] [val] :from [alias] :where [= [userid] userid] :flatp t))
 
 ;;-------------------------- user info -------------------------------
 (defun basic-info (sn)
@@ -439,6 +454,16 @@
               :where [> [karma] 0]
               :order-by `((,[karma] desc))
               :limit num)))
+
+
+;;-------------------------- saved_sites -------------------------------
+(defun articleid-from-saved-sites (userid)
+  (select [article] :from [saved_sites] :where [= [userid] userid] :flatp t))
+
+;;-------------------------- closed_sites -------------------------------
+(defun articleid-from-closed-sites (userid)
+  (select [article] :from [closed_sites] :where [= [userid] userid] :flatp t))
+
 
 ;;-------------------------- unknown tables -------------------------------
 
