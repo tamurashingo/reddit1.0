@@ -26,11 +26,12 @@
                 :scan-to-strings
                 :split)
   (:import-from :reddit.user-info
-                :user-alias))
+                :user-alias)
+  (:export :decode-aliases))
 (in-package :reddit.recommend)
 
 
-(defparameter *email-scanner* (create-scanner "^\\w*[+-._\\w]*\\w@\\w[-._\\w]*\\w\\.\\w{2,3}$"))
+(defparameter *email-scanner* (create-scanner "^\\w*[+-._\\w]*\\w@\\w[-._\\w]*\\w\\.\\w+$"))
 (defparameter *token-scanner* (create-scanner "[,;\\s]+"))
 
 (defun is-email (str)
@@ -47,7 +48,7 @@
         ((not (member rcpts expanded :test #'string=))
          (email-lst (tokens (user-alias info rcpts)) info emails (push rcpts expanded)))
         (t emails)))
-                     
+
 (defun decode-aliases (str info)
   (email-lst (tokens str) info))
 
