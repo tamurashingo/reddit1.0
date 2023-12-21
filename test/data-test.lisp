@@ -23,8 +23,7 @@
 (deftest register-user-and-check
   (testing "register normal user"
     ;; prepare
-
-           (add-user "tamu1" "tamu1@example.com" "password1" "127.0.0.1")
+    (add-user "tamu1" "tamu1@example.com" "password1" "127.0.0.1")
 
     ;; validate
     (ok (valid-login-p "tamu1" "password1"))
