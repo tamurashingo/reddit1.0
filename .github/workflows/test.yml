@@ -42,24 +42,23 @@ jobs:
       - name: Install roswell
         run: |
           curl -L https://raw.githubusercontent.com/roswell/roswell/v22.12.14.113/scripts/install-for-ci.sh | sh
-          ros install rove qlot
+          ros install rove
         env:
           LISP: ${{ matrix.lisp }}
       - name: build
         run: |
           export PATH=$HOME/.roswell/bin:$PATH
-          qlot install
           ros install ${{ matrix.lisp }}
           ros use ${{ matrix.lisp }}
-          qlot exec ros run -e '(ql:quickload :reddit)' -e '(ql:quickload :reddit-db)'
+          # qlot exec ros run -e '(ql:quickload :reddit)' -e '(ql:quickload :reddit-db)'
         env:
           CL_SOURCE_REGISTRY: ${{ github.workspace }}
       - name: Run test
         run: |
           export PATH=$HOME/.roswell/bin:$PATH
           ros use ${{ matrix.lisp }}
-          # rove reddit-test.asd
-          qlot exec ros run -e "(ql:quickload :reddit)" -e "(ql:quickload :reddit-db)" -e "(ql:quickload :reddit-test)" -e "(asdf:test-system :reddit-test)"
+          rove reddit-test.asd
+          # qlot exec ros run -e "(ql:quickload :reddit)" -e "(ql:quickload :reddit-db)" -e "(ql:quickload :reddit-test)" -e "(asdf:test-system :reddit-test)"
         env:
           CL_SOURCE_REGISTRY: ${{ github.workspace }}
           REDDIT_DATABASE_DATABASE: "reddit_test"
