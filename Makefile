@@ -7,7 +7,7 @@ DEV_NW := reddit10_dev_nw
 
 DOCKER_BASE_IMG := reddit10-base
 DOCKER_DEV_IMG := reddit10-dev
-DOCKER_TEST_IMG :-= reddit10-test
+DOCKER_TEST_IMG := reddit10-test
 
 
 TEST_PROJECT := reddit10-test
