@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:12.21-alpine3.19
+        image: postgres:12.17-alpine3.19
         env:
           POSTGRES_USER: pgsql
           POSTGRES_PASSWORD: "pgcwip42:"
