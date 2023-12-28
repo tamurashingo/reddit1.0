@@ -29,7 +29,6 @@
         (format T "... created~%"))
       (format T "... already exists~%")))
 
-
 (defun create-sequence (sequence-name)
   (format T "create sequence: ~A~%" sequence-name)
   (when (not (clsql:sequence-exists-p sequence-name :owner (database-username)))
@@ -46,7 +45,7 @@
 
 (defun drop-table (table-name)
   (format T "drop table: ~A" table-name)
-  (clsql:drop-table table-name :if-does-not-exist :ignore)
+  (clsql:drop-table table-name :if-does-not-exist :ignore :owner (database-username))
   (format T "... dropped~%"))
 
 (defun drop-sequence (sequence-name)
@@ -58,7 +57,37 @@
 (defun up ()
   (create-table-from-class 'reddit.view-defs:user)
   (create-table-from-class 'reddit.view-defs:article)
-  (create-table-from-class 'reddit.view-defs:article-with-sn)
+  ;; add column for full text search
+  (clsql:execute-command
+   "alter table
+        articles
+      add column
+        idxfti tsvector GENERATED ALWAYS AS (to_tsvector('english', coalesce(url, '') || ' ' || coalesce(title, ''))) STORED")
+  (clsql:execute-command
+   "create index
+        idxfti_idx
+      on articles
+        using gin(idxfti)")
+  ; (create-table-from-class 'reddit.view-defs:article-with-sn)
+  ;; create view for full text search
+  (clsql:execute-command
+   "create view
+        articles_sn
+    as
+      select
+        articles.id,
+        articles.url,
+        articles.title,
+        articles.date,
+        articles.submitter,
+        articles.pop,
+        users.screenname,
+        articles.idxfti
+      from
+        articles,
+        users
+      where
+        articles.submitter = users.id")
   (create-table-from-class 'reddit.view-defs:wtf)
   (create-table-from-class 'reddit.view-defs:click)
   (create-table-from-class 'reddit.view-defs:like)
@@ -83,7 +112,8 @@
   (drop-table-from-class 'reddit.view-defs:like)
   (drop-table-from-class 'reddit.view-defs:click)
   (drop-table-from-class 'reddit.view-defs:wtf)
-  (drop-table-from-class 'reddit.view-defs:article-with-sn)
+  ;(drop-table-from-class 'reddit.view-defs:article-with-sn)
+  (clsql:execute-command "drop view if exists articles_sn")
   (drop-table-from-class 'reddit.view-defs:article)
   (drop-table-from-class 'reddit.view-defs:user)
   (drop-sequence "userid")

@@ -59,7 +59,8 @@
            :articleid-from-like-site
            :name-value-from-alias
            :articleid-from-saved-sites
-           :articleid-from-closed-sites))
+           :articleid-from-closed-sites
+           :search-article))
 (in-package :reddit.data)
 
 
@@ -214,6 +215,16 @@
     (delete-records :from [articles]
                     :where [and [= [id] articleid]
                                 [= [submitter] userid]])))
+
+(defun search-article (query limit offset)
+  (select 'reddit.view-defs:article-with-sn
+          :where (sql-expression :string (format nil "idxfti @@ ~a" query))
+          :order-by `((,(sql-expression :string (format nil "ts_rank_cd(idxfti, ~a)" query)) desc)
+                      (,[articles_sn date] desc))
+          :offset offset
+          :limit limit
+          :flatp t))
+
 
 ;;--------------------------- neuter ---------------------------
 (defun neuterd (id-or-ip)

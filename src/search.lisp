@@ -24,9 +24,10 @@
   (:import-from :cl-ppcre
                 :regex-replace-all)
   (:import-from :clsql
-                :select
-                :sql
-                :sql-expression))
+                :sql)
+  (:import-from :reddit.data
+                :search-article)
+  (:export :search-sites))
 (in-package :reddit.search)
 
 (defun search-char (c)
@@ -37,7 +38,7 @@
 (defmacro rra (rex new str)
   "Make regex-replace-all lest awkward to type"
   `(regex-replace-all ,rex ,str ,new))
-  
+
 (defun to-search-str (str)
   "Formats the incoming str into a valid tsearch string"
   (rra "(?i) or | " "|"
@@ -47,22 +48,8 @@
                       (rra "\\s+" " "
                            (rra "\\\"" "'" 
                                 (remove-if-not #'search-char str))))))))
-                     
+
 (defun search-sites (str &optional (limit 25) (offset 0))
   (when (> (length str) 0)
-    (let ((q (format nil "to_tsquery('default', ~a)" (sql (to-search-str str)))))
-      (select 'article-with-sn
-              :where (sql-expression :string (format nil "idxfti @@ ~a" q))
-              :order-by `((,(sql-expression :string (format nil "rank(idxfti, ~a)" q)) desc)
-                          (,[articles_sn date] desc))
-              :offset offset
-              :limit limit
-              :flatp t))))
-
-                  
-  
-
-
-
-
-
+    (let ((q (format nil "to_tsquery('english', ~a)" (sql (to-search-str str)))))
+      (search-article q limit offset))))
