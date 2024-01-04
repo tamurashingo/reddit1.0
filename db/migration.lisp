@@ -4,7 +4,8 @@
 
 (in-package :cl-user)
 (defpackage :reddit.db.migration
-  (:use :cl)
+  (:use :cl
+        :reddit.db.function)
   (:import-from :reddit.config
                 :database-username)
   (:export :up
@@ -34,6 +35,11 @@
   (when (not (clsql:sequence-exists-p sequence-name :owner (database-username)))
     (clsql:create-sequence sequence-name)))
 
+(defun create-function (fn)
+  (format T "create function: ~A" (getf fn :name))
+  (clsql:execute-command (getf fn :code))
+  (format T "... created~%"))
+
 (defun drop-table-from-class (view-class-name)
   (let ((table-name (clsql:view-table (find-class view-class-name))))
     (format T "drop table: ~A  from ~A class" table-name view-class-name)
@@ -52,6 +58,11 @@
   (format T "drop sequence: ~A~%" sequence-name)
   (when (clsql:sequence-exists-p sequence-name :owner (database-username))
     (clsql:drop-sequence sequence-name)))
+
+(defun drop-function (fn)
+  (format T "drop function: ~A" (getf fn :name))
+  (clsql:execute-command (getf fn :code))
+  (format T "... dropped~%"))
 
 
 (defun up ()
@@ -101,7 +112,9 @@
   (create-table 'saved_sites '((userid integer)
                                (article integer)))
   (create-table 'closed_sites '((userid integer)
-                                (article integer))))
+                                (article integer)))
+  (create-function (create-function-seconds)))
+
 
 (defun down ()
   (drop-table-from-class 'reddit.view-defs:alias)
@@ -119,7 +132,8 @@
   (drop-sequence "userid")
   (drop-sequence "articleid")
   (drop-table 'saved_sites)
-  (drop-table 'closed_sites))
+  (drop-table 'closed_sites)
+  (drop-function (drop-function-seconds)))
 
 (defun rebuild ()
   (down)
