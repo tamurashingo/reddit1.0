@@ -22,6 +22,7 @@
                  (:file "util")))
                (:module "db"
                 :components
-                ((:file "migration"))))
+                ((:file "function")
+                 (:file "migration" :depends-on ("function")))))
   :description "database migration")
 
