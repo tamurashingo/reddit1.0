@@ -72,9 +72,8 @@
                       (:new '(([articles_sn date] desc)))
                         (t `(;;(,(sql-operation 'function "recent_pop" [id]) desc)
                              (,[- [pop]
-                                  ;; XXX: seconds is stored function?
-                                  ;;[/ (sql-operation 'function "seconds" [date]) *hot-factor*]] desc))))
-				  0] desc))))
+                                  [/ (sql-operation 'function "seconds" [date]) *hot-factor*]] desc))))
+				  ;; 0] desc))))
           :offset offset
           :limit limit
           :flatp t
