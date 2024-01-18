@@ -20,7 +20,12 @@
 
 (in-package :cl-user)
 (defpackage reddit.autocompute
-  (:use :cl))
+  (:use :cl)
+  (:export :ac
+           :ac-name
+           :ac-val
+           :ac-update
+           :destroy-processes))
 (in-package :reddit.autocompute)
 
 (defun get-processes (name)
@@ -69,4 +74,4 @@
   (bt:with-lock-held ((ac-lock auto))
     (setf (slot-value auto 'val)
           (funcall (ac-fn auto)))))
-             
+
