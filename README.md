@@ -65,7 +65,7 @@ open http://localhost:8000/browse
 for shutting down
 
 ```lisp
-(reddi:shutdown-reddit)
+(reddit:shutdown-reddit)
 ```
 
 
