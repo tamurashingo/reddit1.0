@@ -1,0 +1,20 @@
+FROM fukamachi/sbcl
+
+RUN apt-get update && apt-get install -y libpq-dev curl
+
+# install latest qlot
+RUN curl -L https://qlot.tech/installer | sh
+
+RUN mkdir /reddit
+WORKDIR /reddit
+
+RUN qlot install
+
+COPY . /reddit
+
+COPY entrypoint.base.sh /usr/bin/
+RUN chmod +x /usr/bin/entrypoint.base.sh
+ENTRYPOINT ["entrypoint.base.sh"]
+ENV PATH $HOME/.roswell/bin:$PATH
+
+CMD ["/bin/bash"]

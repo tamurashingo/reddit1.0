@@ -1,3 +1,4 @@
+ql trivial-mimes
 ql hunchentoot
 ql bordeaux-threads
 ql cl-who
@@ -7,3 +8,5 @@ ql ironclad
 ql cl-memcached
 ql dexador
 ql cl-package-locks
+ql rove
+http uiop https://asdf.common-lisp.dev/archives/uiop-3.3.1.tar.gz

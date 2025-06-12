@@ -2,90 +2,98 @@
 
 This version is an easier version to develop using docker.
 
+## Quickstart
 
-## for Development
-
-## Require
-
-- GNU Make
-- Docker Compose
-
-### Run
-
-Run docker.
+create docker network and base image.
 
 ```sh
-# for create docker network
 make setup
+```
 
+startup swank server and db, sendmail, etc...
+
+```sh
 make dev.up
 ```
 
-Connect Swank, for example from emacs.
+connect swank by using emacs
 
-```sh
-M-x slime-connect localhost 4005
+```elisp
+(slime-connect "localhost" 4005)
+```
+
+in slime, add reddit project directory to quicklisp project directory
+
+```lisp
+(push #P"/reddit/" ql:*local-project-directories*)
 ```
 
 
-### setting
+load reddit
 
 ```lisp
-;; add reddit project directory to quicklisp project directory
-(push #P"/reddit/" ql:*local-project-directories*)
-
-;; load reddit
 (ql:quickload :reddit)
+```
 
-;; connect database
+migration (require once)
+
+```lisp
+;; connect to database
+(reddit.config:set-docker-config)
 (reddit.main::connect-database)
 
-;; migrate database
+;; load migration code
 (ql:quickload :reddit-db)
+
+;; migration
 (reddit.db.migration:up)
 
 ;; disconnect database
 (reddit.main::disconnect-database)
 ```
 
-### start
+start up reddit application
+
 
 ```lisp
-;; set configuration
-(reddit.config:set-docker-config)
-;; run
 (reddit:startup-reddit)
 ```
 
-open http://localhost:8000/
 
+open http://localhost:8000/browse
 
-### stop
-
-shutdown reddit application.
+for shutting down
 
 ```lisp
-(reddit:shutdown-reddit)
+(reddi:shutdown-reddit)
 ```
 
 
-shutdown docker containers.
+shutting down develop server
 
 ```sh
 make dev.down
 ```
 
-### run tests
+
+## for test
+
+startup test server
 
 ```sh
-# startup docker containers
 make test.up
+```
 
-# run test
+run tests
+
+```sh
 make test.run
+```
 
-# shutdown docker containers
-make test.down
+shutdown test server
+
+```sh
+make tet.down
 ```
 
 
@@ -175,4 +183,4 @@ https://github.com/mailhog/MailHog/blob/master/docs/Auth.md
 
 ---
 - original Copyright 2018 Reddit, Inc.
-- refactored Copyright 2018, 2023 tamura shingo
+- refactored Copyright 2018-2025 tamura shingo
