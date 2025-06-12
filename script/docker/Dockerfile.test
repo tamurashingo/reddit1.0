@@ -1,17 +1,13 @@
-FROM fukamachi/sbcl
+FROM reddit10-base:latest
 
-RUN apt-get update && apt-get install -y libpq-dev
-RUN ros install qlot rove
-
-RUN mkdir /reddit
-WORKDIR /reddit
-COPY . /reddit
+RUN ros run -e '(ql-dist:install-dist "http://dist.luckylambda.technology/releases/lucky-lambda.txt" :prompt NIL)'
 
 COPY entrypoint.test.sh /usr/bin/
 RUN chmod +x /usr/bin/entrypoint.test.sh
 ENTRYPOINT ["entrypoint.test.sh"]
 
-CMD [ "ros", "run", \
+CMD [ "qlot", "exec", \
+      "ros", "run", \
       "-e", "(ql:quickload :reddit)", \
       "-e", "(ql:quickload :reddit-db)", \
       "-e", "(ql:quickload :reddit-test)", \

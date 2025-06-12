@@ -16,17 +16,15 @@ TEST_NW := reddit10_test_nw
 setup: setup.docker setup.dev setup.test
 
 setup.docker:
-	docker image build -t $(DOCKER_BASE_IMG) -f Dockerfile.base .
+	docker image build -t $(DOCKER_BASE_IMG) -f script/docker/Dockerfile.base script/docker/
 	docker run --rm -v $(CURDIR):/reddit/ --entrypoint qlot $(DOCKER_BASE_IMG) install
 
 setup.dev:
-	test -z "$$(docker network ls --filter name=$(DEV_NW) --format '{{ .ID }}')"
-	docker network create -d bridge $(DEV_NW)
+	test -z "$$(docker network ls --filter name=$(DEV_NW) --format '{{ .ID }}')" && docker network create -d bridge $(DEV_NW) || true
 
 
 setup.test:
-	test -z "$$(docker network ls --filter name=$(TEST_NW) --format '{{ .ID }}')"
-	docker network create -d bridge $(TEST_NW)
+	test -z "$$(docker network ls --filter name=$(TEST_NW) --format '{{ .ID }}')" && docker network create -d bridge $(TEST_NW) || true
 
 dev.up:
 	docker-compose -f script/docker/postgresql.dev.yml -p $(DEV_PROJECT) up -d
