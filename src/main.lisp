@@ -74,7 +74,15 @@
                 "/favicon.ico"
                 (make-pathname :directory "/home/reddit/reddit/web/" :name "favicon" :type "ico" :version nil
                                :defaults (load-time-value *load-pathname*))
-                "image/x-icon"))
+                "image/x-icon")
+               (create-static-file-dispatcher-and-handler
+                "/static/styles.css"
+                "/reddit/static/styles.css"
+                "text/css")
+               (create-static-file-dispatcher-and-handler
+                "/static/logic.js"
+                "/reddit/static/logic.js"
+                "text/javascript"))
          (mapcar (lambda (args)
                    (apply #'create-prefix-dispatcher args))
                  '(("/rss/new" rss-new)
