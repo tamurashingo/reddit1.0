@@ -197,7 +197,7 @@
       (funcall fn))))
 
 (defun set-session-cookie (iden &optional mem)
-  (log-message* "set cookie to: ~a" iden)
+  (log-message* :DEBUG "set cookie to: ~a" iden)
   (set-cookie "reddit-session" :value iden
               :path "/"
               :expires (when mem (2weeks))))
@@ -217,7 +217,7 @@
       (when (and session-iden
                  (not (string= session-iden ""))
                  (not (session-value :user-id)))
-        (log-message* "cookies is: ~a" session-iden)
+        (log-message* :DEBUG "cookies is: ~a" session-iden)
         (when-bind (id (valid-cookie session-iden))
           (setf (session-value :user-id) id))))
     (reset-session-cookies)
@@ -241,7 +241,7 @@
       (:head 
        (:meta :http-equiv "Content-Type" :content "text/html; charset=UTF-8")
        (:title "reddit - what's new online")
-       (:script :src "/static/prototype.js" :language "javascript" :type "text/javascript" "")
+       (:script :src "https://ajax.googleapis.com/ajax/libs/prototype/1.7.3.0/prototype.js" :language "javascript" :type "text/javascript" "")
        (:script :language "javascript" (str (if (logged-in-p) "var logged = true" "var logged= false")))
        (:script :src "/static/logic.js" :language "javascript" :type "text/javascript" "")
        (:link :rel "stylesheet" :href "/static/styles.css" :type "text/css")
@@ -302,7 +302,7 @@
       ;;submit
       (when (and url title (not id))
         (when-bind (article (insert-article title url (uid) (session-remote-addr *session*) fuser))
-          (log-message* "SUBMITTED: ~a" (article-title article))
+          (log-message* :DEBUG "SUBMITTED: ~a" (article-title article))
           (when (and save (info))
             (setf (user-saved (info) (article-id article)) t)
             (save-site (uid) (article-id article)))
@@ -315,7 +315,7 @@
         (when-bind* ((info (get-info (uid)))
                      (to (decode-aliases to info))
                      (email (user-emai (userobj)))) 
-          (log-message* "EMAIL: ~a" to)
+          (log-message* :DEBUG "EMAIL: ~a" to)
           (send-recommendation (uid) id (session-remote-addr *session*) to email
                                (and (> (length message) 0) (shorten-str message 500)))
           (setf (session-value :sent) t))))))
@@ -335,7 +335,7 @@
              (if (and userid (not (fake-user-p user)))
                  (format nil "baduser")
                  (progn
-                   (log-message* "REGISTER: ~a" user)
+                   (log-message* :INFO "REGISTER: ~a" user)
                    (add-user user nil pass (and *session* (session-remote-addr *session*)))
                    (login user pass mem)
                    (htm (format nil "~a (~a)" (user-name (userobj)) (user-karma (userobj)))))))))))
@@ -349,7 +349,7 @@
 
 (defun logout ()
   (with-html
-    (log-message* "LOGOUT: ~a" (uid))
+    (log-message* :INFO "LOGOUT: ~a" (uid))
     (remove-info (uid))
     (setf (session-value :user-id) nil)
     (set-session-cookie nil)))
@@ -900,6 +900,11 @@
 
 (defun page-test ()
   t)
+
+
+
+
+
 
 
 
