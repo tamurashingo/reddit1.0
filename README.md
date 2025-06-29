@@ -22,13 +22,6 @@ connect swank by using emacs
 (slime-connect "localhost" 4005)
 ```
 
-in slime, add reddit project directory to quicklisp project directory
-
-```lisp
-(push #P"/reddit/" ql:*local-project-directories*)
-```
-
-
 load reddit
 
 ```lisp
