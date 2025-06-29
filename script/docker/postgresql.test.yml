@@ -1,4 +1,3 @@
-version: '3'
 services:
   db:
     image: postgres:12.17-alpine3.19
@@ -10,6 +9,22 @@ services:
     volumes:
       - ../../tmp/db/test:/var/lib/postgresql/data
       - ../../script/db:/docker-entrypoint-initdb.d
+    networks:
+      - reddit10_test_nw
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pgsql}"]
+      interval: 1s
+      timeout: 5s
+      retries: 3
+  pgweb:
+    image: sosedoff/pgweb
+    ports:
+      - '8081:8081'
+    environment:
+      - DATABASE_URL=postgres://pgsql:pgcwip42%3A@db:5432/reddit?sslmode=disable
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
       - reddit10_test_nw
 networks:

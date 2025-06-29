@@ -1,12 +1,9 @@
 FROM reddit10-base:latest
 
-COPY entrypoint.dev.sh /usr/bin/
-RUN chmod +x /usr/bin/entrypoint.dev.sh
-ENTRYPOINT ["entrypoint.dev.sh"]
 EXPOSE 8000
 EXPOSE 4005
 
-CMD [ "qlot", "exec" , \
+ENTRYPOINT [ "qlot", "exec" , \
       "ros", "run", \
       "-e", "(ql:quickload :swank)", \
       "-e", "(setf swank::*loopback-interface* \"0.0.0.0\")", \
