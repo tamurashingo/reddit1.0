@@ -2,6 +2,10 @@
 
 This version is an easier version to develop using docker.
 
+
+![screenshot](image/screenshot.png)
+
+
 ## Quickstart
 
 create docker network and base image.
@@ -170,7 +174,17 @@ https://github.com/mailhog/MailHog/blob/master/docs/Auth.md
 (help...)
 
 
-## notes
+
+# setup movie
+
+**setting up**
+
+[![make setup](image/reddit_setup.png)](https://www.youtube.com/watch?v=YV4D7QY6NrY)
+
+**startup reddit server**
+
+[![startup reddit server](image/reddit_up.png)](https://www.youtube.com/watch?v=ZputKzkBi5I)
+
 
 ...
 
