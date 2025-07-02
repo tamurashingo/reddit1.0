@@ -54,6 +54,7 @@
            :valid-login-p
            :valid-user-p
            :get-article
+           :get-article-sn
            :insert-article
            :articleid-from-clicks
            :articleid-from-like-site

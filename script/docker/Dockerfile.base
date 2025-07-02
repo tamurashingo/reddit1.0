@@ -12,9 +12,6 @@ RUN qlot install
 
 COPY . /reddit
 
-COPY entrypoint.base.sh /usr/bin/
-RUN chmod +x /usr/bin/entrypoint.base.sh
-ENTRYPOINT ["entrypoint.base.sh"]
-ENV PATH $HOME/.roswell/bin:$PATH
+ENV PATH=/root/.roswell/bin:$PATH
+ENV CL_SOURCE_REGISTRY=/reddit
 
-CMD ["/bin/bash"]
