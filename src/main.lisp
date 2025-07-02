@@ -104,7 +104,8 @@
                    ("/password" page-password)
                    ("/lucky" page-lucky)
                    ("/user/" page-user)
-                   ("/toolbar" reddit-toolbar)))
+                   ("/toolbar" reddit-toolbar)
+                   ("/" page-default)))
          (list (create-static-file-dispatcher-and-handler
                 "/blog/atom.xml" "/home/reddit/reddit/web/blog/atom.xml" "text/xml"))
          (mapcar (lambda (args)

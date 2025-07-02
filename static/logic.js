@@ -1,9 +1,8 @@
 function login() {
-    var user = document.getElementById('loguser').value;
-    var pass = document.getElementById('logpass').value;
-    var mem = document.getElementById('logmem');
+    const user = document.getElementById('loguser').value;
+    const pass = document.getElementById('logpass').value;
 
-    var logerror = document.getElementById('logerror');
+    const logerror = document.getElementById('logerror');
 
     if (user === null || user === '') {
         logerror.innerHTML = 'input username';
@@ -15,7 +14,7 @@ function login() {
         return false;
     }
 
-    var form = document.getElementById('logform');
+    const form = document.getElementById('logform');
 
 
     new Ajax.Request('/aop', {
@@ -35,10 +34,10 @@ function login() {
 }
 
 function register() {
-    var user = document.getElementById('loguser').value;
-    var pass = document.getElementById('logpass').value;
+    const user = document.getElementById('loguser').value;
+    const pass = document.getElementById('logpass').value;
 
-    var logerror = document.getElementById('logerror');
+    const logerror = document.getElementById('logerror');
 
     if (user === null || user === '') {
         logerror.innerHTML = 'input username';
@@ -50,7 +49,7 @@ function register() {
         return false;
     }
 
-    var form = document.getElementById('logform');
+    const form = document.getElementById('logform');
 
 
     new Ajax.Request('/aop', {
@@ -79,4 +78,15 @@ function logout() {
     });
 
     return false;
+}
+
+
+function chksub() {
+    
+}
+
+
+function shareon() {
+    const share = document.getElementById('share');
+    share.style.display = 'block';
 }

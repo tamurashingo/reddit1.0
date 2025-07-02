@@ -762,9 +762,10 @@
                             (:td (:input :id "url" :name "url" :type "text" :value url :size 60))
                             (:td :id "urlerr" :class "error"))
                        (:tr (:td :align "right" "title")
-                            (:td (:input :id "title" :name "title" :style (unless title "color: gray")
-                                         :value (if title (esc-quote title) "Enter a title, or click submit to find one automatically.")
-                                         :onfocus (unless title "clearTitle(this)") :type "text" :size 60))
+                            (:td (:input :id "title" :name "title"
+                                         :value (when title (esc-quote title))
+                                         :placeholder "Enter a title, or click submit to find one automatically."
+                                         :type "text" :size 60))
                             (:td :id "titleerr" :class "error"))
                        (:tr (:td) (:td (:input :id "save" :name "save" :type "checkbox") "add to my saved sites")))))
                (bottom-submit))))))))))

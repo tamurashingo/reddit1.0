@@ -37,6 +37,11 @@ body {
     font-weight: bold;
 }
 
+.error {
+    color: #FF0000;
+    font-weight: bold;
+}
+
 .topmenu {
     color: #888888;
     text-align: right;
