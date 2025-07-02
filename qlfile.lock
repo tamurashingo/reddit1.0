@@ -1,51 +1,51 @@
 ("quicklisp" .
  (:class qlot/source/dist:source-dist
   :initargs (:distribution "https://beta.quicklisp.org/dist/quicklisp.txt" :%version :latest)
-  :version "2024-10-12"))
+  :version "2025-06-22"))
 ("trivial-mimes" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
-  :version "ql-2023-10-21"))
+  :version "ql-2025-06-22"))
 ("hunchentoot" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
-  :version "ql-2024-10-12"))
+  :version "ql-2025-06-22"))
 ("bordeaux-threads" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
-  :version "ql-2024-10-12"))
+  :version "ql-2025-06-22"))
 ("cl-who" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
-  :version "ql-2024-10-12"))
+  :version "ql-2025-06-22"))
 ("clsql" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
-  :version "ql-2022-11-06"))
+  :version "ql-2025-06-22"))
 ("cl-smtp" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
-  :version "ql-2024-10-12"))
+  :version "ql-2025-06-22"))
 ("ironclad" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
-  :version "ql-2024-10-12"))
+  :version "ql-2025-06-22"))
 ("cl-memcached" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
-  :version "ql-2015-06-08"))
+  :version "ql-2025-06-22"))
 ("dexador" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
-  :version "ql-2024-10-12"))
+  :version "ql-2025-06-22"))
 ("cl-package-locks" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
-  :version "ql-2011-12-03"))
+  :version "ql-2025-06-22"))
 ("rove" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
-  :version "ql-2024-10-12"))
+  :version "ql-2025-06-22"))
 ("uiop" .
  (:class qlot/source/http:source-http
   :initargs (:url "https://asdf.common-lisp.dev/archives/uiop-3.3.1.tar.gz" :archive-md5 nil)
