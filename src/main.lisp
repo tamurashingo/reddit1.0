@@ -72,17 +72,9 @@
         (nconc
          (list (create-static-file-dispatcher-and-handler
                 "/favicon.ico"
-                (make-pathname :directory "/home/reddit/reddit/web/" :name "favicon" :type "ico" :version nil
+                (make-pathname :directory "/reddit/static/" :name "favicon" :type "ico" :version nil
                                :defaults (load-time-value *load-pathname*))
-                "image/x-icon")
-               (create-static-file-dispatcher-and-handler
-                "/static/styles.css"
-                "/reddit/static/styles.css"
-                "text/css")
-               (create-static-file-dispatcher-and-handler
-                "/static/logic.js"
-                "/reddit/static/logic.js"
-                "text/javascript"))
+                "image/x-icon"))
          (mapcar (lambda (args)
                    (apply #'create-prefix-dispatcher args))
                  '(("/rss/new" rss-new)

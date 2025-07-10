@@ -57,7 +57,7 @@ start up reddit application
 ```
 
 
-open http://localhost:8000/browse
+open http://localhost:8080/
 
 for shutting down
 

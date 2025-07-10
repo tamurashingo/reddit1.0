@@ -32,8 +32,10 @@ dev.up:
 	docker compose -f script/docker/memcached.dev.yml -p $(DEV_PROJECT) up -d
 	docker compose -f script/docker/sendmail.dev.yml -p $(DEV_PROJECT) up -d
 	docker compose -f script/docker/reddit.dev.yml -p $(DEV_PROJECT) up -d
+	docker compose -f script/docker/nginx.dev.yml -p $(DEV_PROJECT) up -d
 
 dev.down:
+	docker compose -f script/docker/nginx.dev.yml -p $(DEV_PROJECT) down
 	docker compose -f script/docker/reddit.dev.yml -p $(DEV_PROJECT) down
 	docker compose -f script/docker/sendmail.dev.yml -p $(DEV_PROJECT) down
 	docker compose -f script/docker/memcached.dev.yml -p $(DEV_PROJECT) down
