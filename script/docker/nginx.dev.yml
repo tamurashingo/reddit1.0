@@ -1,0 +1,13 @@
+services:
+  nginx:
+    image: nginx
+    ports:
+      - '8080:80'
+    volumes:
+      - ../../:/reddit
+      - ../../script/nginx/server.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - reddit10_dev_nw
+networks:
+  reddit10_dev_nw:
+    external: true
